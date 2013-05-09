@@ -29,11 +29,6 @@ Testing under ActivePerl 5.16.3.1603.
    <2> If remote one's time is newer, give warning and choice.
 
 
-USAGE:        ~ -re <Excel file remote path>  -t <sheet name> -n <line number, line number, ...> -o [output file]
-              ~ -le <local Excel file path>   -i [input file]
-              ~ -u -u1 <Excel file remote path> -u2 <Html file remote path>
-  
-OPTIONS:      -o: Output the specified line by only two cols to output txt file.
-              -i: Update the input file to the local Excle file by specified line;
-                  then generate html of this Excel file.
-              -u: Sync up local html and Excle file to remote.
+USAGE:        
+
+This perl script will provide a CMD MENU.
