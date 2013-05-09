@@ -8,11 +8,20 @@ SYNOPSIS
 
 To remote update team's LOC_Machines_List.xls.
 
+REQUIREMENTS
+
+Need:
+Spreadsheet::ParseExcel
+Spreadsheet::WriteExcel
+Text::ASCIITable 
+
 DESCRIPTION
 
-1. Telnet to remote system, write down modified date/time.
+Testing under ActivePerl 5.16.3.1603.
+
+1. FTP to remote system, write down modified date/time.
 2. Download the specified Excel.
-3. Modify it by specified line.
+3. Modify it by specified cell.
 4. Export this Excel file to a html.
 5. Check remote Excel file's modfied date/time:
    <1> If remote one's time is older, update local copy (Excel

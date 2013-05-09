@@ -1,4 +1,4 @@
-#!/usr/bin/env perl 
+package BC_NetworkAdmin; 
 
 =pod
 
@@ -72,10 +72,6 @@ Bugs: N/A
 <B>Revision:</B>&nbsp 1.0                      </br>
 
 =end html
-
-=cut
-
-package BC_NetworkAdmin;
 
 =head2 Comments in Code
 

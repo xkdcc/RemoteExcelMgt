@@ -10,79 +10,82 @@
 <body style="background-color: white">
 
 
-<!-- INDEX BEGIN -->
-<div name="index">
-<p><a name="__index__"></a></p>
 
-<ul>
-
-	<li><a href="#bc_exceladmin_pm">BC_ExcelAdmin.pm</a></li>
-	<ul>
-
-		<li><a href="#copyright">COPYRIGHT</a></li>
-		<li><a href="#synopsis">SYNOPSIS</a></li>
-		<li><a href="#description">DESCRIPTION</a></li>
-		<li><a href="#usage">USAGE</a></li>
-		<li><a href="#requirements">REQUIREMENTS</a></li>
-		<li><a href="#bugs">BUGS</a></li>
-		<li><a href="#notes">NOTES</a></li>
-		<li><a href="#author">AUTHOR</a></li>
-		<li><a href="#version_infor">VERSION_INFOR</a></li>
-		<li><a href="#comments_in_code">Comments in Code</a></li>
-		<ul>
-
-			<li><a href="#array_of_hash_and_hash_of_array">Array of hash and Hash of Array</a></li>
-			<li><a href="#to_find_a_better_way_to_exchange_arrays">To find a better way to exchange arrays</a></li>
-			<li><a href="#how_to_print_chinese_to_terminal">How to print Chinese to terminal</a></li>
-		</ul>
-
-	</ul>
-
+<ul id="index">
+  <li><a href="#BC_ExcelAdmin.pm">BC_ExcelAdmin.pm</a>
+    <ul>
+      <li><a href="#COPYRIGHT">COPYRIGHT</a></li>
+      <li><a href="#SYNOPSIS">SYNOPSIS</a></li>
+      <li><a href="#DESCRIPTION">DESCRIPTION</a></li>
+      <li><a href="#USAGE">USAGE</a></li>
+      <li><a href="#REQUIREMENTS">REQUIREMENTS</a></li>
+      <li><a href="#BUGS">BUGS</a></li>
+      <li><a href="#NOTES">NOTES</a></li>
+      <li><a href="#AUTHOR">AUTHOR</a></li>
+      <li><a href="#VERSION_INFOR">VERSION_INFOR</a></li>
+      <li><a href="#Revision">Revision</a></li>
+      <li><a href="#Comments-in-Code">Comments in Code</a>
+        <ul>
+          <li><a href="#Array-of-hash-and-Hash-of-Array">Array of hash and Hash of Array</a></li>
+          <li><a href="#To-find-a-better-way-to-exchange-arrays">To find a better way to exchange arrays</a></li>
+          <li><a href="#How-to-print-Chinese-to-terminal">How to print Chinese to terminal</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
 </ul>
 
-<hr name="index" />
-</div>
-<!-- INDEX END -->
+<h1 id="BC_ExcelAdmin.pm">BC_ExcelAdmin.pm</h1>
 
-<p>
-</p>
-<hr />
-<h1><a name="bc_exceladmin_pm">BC_ExcelAdmin.pm</a></h1>
-<p>
-</p>
-<h2><a name="copyright">COPYRIGHT</a></h2>
-<p>Copyright 2012 - 2013 Brant (<a href="mailto:brantchen2008@gmail.com">brantchen2008@gmail.com</a>), All Rights Reserved</p>
-<p>
-</p>
-<h2><a name="synopsis">SYNOPSIS</a></h2>
+<h2 id="COPYRIGHT">COPYRIGHT</h2>
+
+<p>Copyright 2012 - 2013 Brant (brantchen2008@gmail.com), All Rights Reserved</p>
+
+<h2 id="SYNOPSIS">SYNOPSIS</h2>
+
 <p>BC_ExcelAdmin.pm.</p>
-<p>
-</p>
-<h2><a name="description">DESCRIPTION</a></h2>
+
+<h2 id="DESCRIPTION">DESCRIPTION</h2>
+
 <p>Encapsulate Excel file operations for my purpose.</p>
-<p>
-</p>
-<h2><a name="usage">USAGE</a></h2>
-<pre></pre><p>
-</p>
-<h2><a name="requirements">REQUIREMENTS</a></h2>
+
+<h2 id="USAGE">USAGE</h2>
+
+
+
+<pre></pre>
+
+<h2 id="REQUIREMENTS">REQUIREMENTS</h2>
+
 <p>N/A</p>
-<p>
-</p>
-<h2><a name="bugs">BUGS</a></h2>
+
+<h2 id="BUGS">BUGS</h2>
+
+
+
 <pre>
 Bugs: N/A
-</pre><p>
-</p>
-<h2><a name="notes">NOTES</a></h2>
+</pre>
+
+<h2 id="NOTES">NOTES</h2>
+
+
+
 <table border=0>
  <tr>  <td width=626 valign=top style='width:469.8pt;border:solid #FFD966 1.0pt;background:#FFF2CC;'>   <p> 
  <pre>
   For class implementation for Perl, I learnt a lot from http://www.perl.org/books/beginning-perl/ Chapter 11.
-  1. BC_ExcelAdmin.pm is a Class Package.
+  For print data in a table format, I checked:
+    http://perldoc.perl.org/perlform.html
+    http://search.cpan.org/~darren/Text-TabularDisplay-1.34/TabularDisplay.pm
+    http://search.cpan.org/~sharyanto/Data-Format-Pretty-Console-0.24/lib/Data/Format/Pretty/Console.pm
+    http://search.cpan.org/~lunatic/Text-ASCIITable-0.20/lib/Text/ASCIITable.pm
+    http://search.cpan.org/~shlomif/Text-Table-1.126/lib/Text/Table.pm
+    Finally, I chose Text::ASCIITable for my sake.  1. BC_ExcelAdmin.pm is a Class Package.
   2. Object Methods:
      list_sheet_names
      display_sheet
+     display_sheet_header
   3. Class attributes:
      bc_math (BC_Math class)
   4. Object attributes:
@@ -90,39 +93,56 @@ Bugs: N/A
      workbook_orig      (Spreadsheet::ParseExcel::SaveParser->new()->Parse("Your Excel File"))
      target_excel_name  (Excel file name)
      range              (Complex data structure, please find more in code)
+     sheet_header       (array)     
   5. Private methods:
      _init
      _format_default    (Used by display_sheet)
+     _format_table
+     _format_table_with_header_but_no_index
+     _format_table_no_header_but_with_index
+     _format_table_with_header_and_index
+     
  </pre>
  </p>  </td> </tr>
-</table><p>
-</p>
-<h2><a name="author">AUTHOR</a></h2>
+</table>
+
+
+<h2 id="AUTHOR">AUTHOR</h2>
+
+
+
 <B>Author:</B>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp Brant </br>
-<B>Organization: </B>&nbsp     </br><p>
-</p>
-<h2><a name="version_infor">VERSION_INFOR</a></h2>
+<B>Organization: </B>&nbsp     </br>
+
+<h2 id="VERSION_INFOR">VERSION_INFOR</h2>
+
+
+
 <B>Version:</B>&nbsp&nbsp 1.0                  </br>
 <B>Created:</B>&nbsp&nbsp&nbsp2013-4-28 15:33:16 </br>
-<B>Revision:</B>&nbsp 1.0                      </br><p>
-</p>
-<h2><a name="comments_in_code">Comments in Code</a></h2>
-<p>
-</p>
-<h3><a name="array_of_hash_and_hash_of_array">Array of hash and Hash of Array</a></h3>
-<p>About Array of hash and Hash of Array, I gained a lot from &quot;Programming Perl&quot; 3rd edition by Larry Wall, Tom Christiansen and Jon Orwant
-Recommondation.
-You can find it online at <a href="http://docstore.mik.ua/orelly/perl3/prog/index.htm">http://docstore.mik.ua/orelly/perl3/prog/index.htm</a></p>
-<p>
-</p>
-<h3><a name="to_find_a_better_way_to_exchange_arrays">To find a better way to exchange arrays</a></h3>
-<p>Please refer to my post at <a href="http://bbs.chinaunix.net/thread-4080028-1-1.html.">http://bbs.chinaunix.net/thread-4080028-1-1.html.</a></p>
-<p>
-</p>
-<h3><a name="how_to_print_chinese_to_terminal">How to print Chinese to terminal</a></h3>
-<p>A good article can be referred at <a href="http://www.jb51.net/article/16041.htm.">http://www.jb51.net/article/16041.htm.</a></p>
-</br>
-</br>
+<B>Revision:</B>&nbsp 1.01                      </br>
+
+<h2 id="Revision">Revision</h2>
+
+<p>Revision: 1.01 (2013-5-8 21:43:47) Log: 1. Change Perl from 5.8.8 to 5.16.3.1063. 2. Since cpan install Switch under 5.16.3.1063 failed, abandond using switch.</p>
+
+<h2 id="Comments-in-Code">Comments in Code</h2>
+
+<h3 id="Array-of-hash-and-Hash-of-Array">Array of hash and Hash of Array</h3>
+
+<p>About Array of hash and Hash of Array, I gained a lot from &quot;Programming Perl&quot; 3rd edition by Larry Wall, Tom Christiansen and Jon Orwant Recommondation. You can find it online at http://docstore.mik.ua/orelly/perl3/prog/index.htm</p>
+
+<h3 id="To-find-a-better-way-to-exchange-arrays">To find a better way to exchange arrays</h3>
+
+<p>Please refer to my post at http://bbs.chinaunix.net/thread-4080028-1-1.html.</p>
+
+<h3 id="How-to-print-Chinese-to-terminal">How to print Chinese to terminal</h3>
+
+<p>A good article can be referred at http://www.jb51.net/article/16041.htm.</p>
+
+
 </body>
 
 </html>
+
+

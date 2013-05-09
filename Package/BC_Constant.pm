@@ -1,4 +1,4 @@
-#!/usr/bin/env perl 
+package BC_Constant; 
 
 =pod
 
@@ -81,21 +81,23 @@ Bugs: N/A
 =cut
 
 
-package BC_Constant;
-
 use strict;
 use warnings;
 use utf8;
 use Carp;
 use base 'Exporter';
 
+use constant Excel_Format_Default                        => 0;
+use constant Excel_Format_Table                          => 1;
+use constant Excel_Format_Table_No_Header_But_With_Index => 2;
+use constant Excel_Format_Table_With_Header_But_No_Index => 3;
+use constant Excel_Format_Table_With_Header_And_Index    => 4;
 
-
-use constant Excel_Format_Default => 0;
-
-our @EXPORT_OK = qw($Excel_Format_Default);
-
-
+our @EXPORT_OK = qw($Excel_Format_Default
+  $Excel_Format_Table
+  $Excel_Format_Table_No_Header_But_With_Index
+  $Excel_Format_Table_With_Header_But_No_Index
+  $Excel_Format_Table_With_Header_And_Index);
 
 1;
 

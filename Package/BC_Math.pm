@@ -1,4 +1,4 @@
-#!/usr/bin/env perl 
+package BC_Math;
 
 =pod
 
@@ -78,8 +78,6 @@ Bugs: N/A
 =head2 Comments in Code
 
 =cut
-
-package BC_Math;
 
 use strict;
 use warnings;

@@ -16,37 +16,32 @@ Update team's ml.xls on ftp server remotely.
 
 =begin html
 
-<pre>
-1. FTP to remote system, write down modified date/time.
-2. Download the specified Excel.
-3. Modify it by specified line.
-4. Export this Excel file to a local html copy.
-5. Check remote Excel file's modfied date/time:
+1. FTP to remote system, write down modified date/time.</br>
+2. Download the specified Excel.</br>
+3. Modify it by specified line.</br>
+4. Export this Excel file to a local html copy.</br>
+5. Check remote Excel file's modfied date/time:</br>
    <1> If remote one's time is older, update local copy (Excel
-       and html) to overwrite the remote ones.
-   <2> If remote one's time is newer, give warning and choice.
-</pre>
+       and html) to overwrite the remote ones.</br>
+   <2> If remote one's time is newer, give warning and choice.</br>
+
+=end html
 
 =head2 USAGE        
 
 =begin html
 
 <pre>
-USAGE:        ~ -re <Excel file remote path>  -t <sheet name> -n <line number, line number, ...> -o [output file]
-              ~ -le <local Excel file path>   -i [input file]
-              ~ -u -u1 <Excel file remote path> -u2 <Html file remote path>
-  
-OPTIONS:      -o: Output the specified line by only two cols to output txt file.
-              -i: Update the input file to the local Excle file by specified line;
-                  then generate html of this Excel file.
-              -u: Sync up local html and Excle file to remote.
+
+This perl script will provide a CMD MENU.
+
 </pre>
 
 =end html
 
 =head2 REQUIREMENTS
 
-N/A
+Need Spreadsheet::ParseExcel, Spreadsheet::WriteExcel
 
 =head2 BUGS
 
@@ -144,13 +139,18 @@ my $na = BC_NetworkAdmin->new(
 my $local_excel = BC_ExcelAdmin->new( "target_excel_name" => "./ml.xls" );
 $local_excel->list_sheet_names();
 
-#$local_excel->range();
-#$local_excel->range(4, "r_-1", "r_-1", "c_2", "c_6");
-$local_excel->range( 0, "c_0", "c_3", "r_10", "r_5" );
-$local_excel->display_sheet( BC_Constant->Excel_Format_Default );
 
-#$local_excel->range(4, "r_2", "r_6", "c_3", "c_6");
-#$local_excel->range(0, 1, 2, 3, 6);
+$local_excel->range( 0, "c_0", "c_8", "r_2", "r_5" );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_No_Header_But_With_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_But_No_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_And_Index );
+$local_excel->sheet_header(0);
+$local_excel->sheet_header(1);
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
+
 
 END {
 
