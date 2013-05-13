@@ -74,6 +74,11 @@ Bugs: N/A
 
 =end html
 
+=head2 Revision
+
+Revision: 1.01 (2013-5-12 20:48:34)
+Log:
+1. Add judge for range_check().
 
 =head2 Comments in Code
 
@@ -101,7 +106,12 @@ sub _init {
 
 sub range_check {
   my $self = shift;
-  my ( $arr_given, $arr_target ) = ( shift, shift );
+  my ( $arr_given, $arr_target ) = ();
+  
+  if (scalar (@_) !=2) {
+     croak "Argv count should be 2.";
+  }
+  ( $arr_given, $arr_target ) = (shift, shift);
 
   if ( defined @$arr_given[0] && defined @$arr_given[1] ) {
     # Sort given point to right order    

@@ -73,6 +73,12 @@ Bugs: N/A
 
 =end html
 
+=head2 Revision
+
+Revision: 1.01 (2013-5-12 20:48:34)
+Log:
+1. Refactor the flow in Class attributes subroutine, to be more clear and reasonable.
+
 =head2 Comments in Code
 
 =cut
@@ -99,62 +105,82 @@ sub _init {
 
 sub target_path {
   my $self = shift;
-  unless ( ref $self ) {
+  my $data;
+  
+  unless ( ref $self eq "BC_NetworkAdmin") {
     croak "Should call target_path with an object, not a class.";
   }
-
-  # Receive more data
-  my $data = shift;
-
-  # Set the target_path if there's any data there.
-  $self->{target_path} = $data if defined $data;
-
-  return $self->{target_path};
+  
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{target_path} = $data;
+  }
+  elsif ( defined $self->{target_path} ) {
+    return $self->{target_path};
+  }
+  else {
+    return undef;
+  }
 }
 
 sub ftpsrv {
   my $self = shift;
-  unless ( ref $self ) {
+  my $data;
+  
+  unless ( ref $self eq "BC_NetworkAdmin") {
     croak "Should call target_path with an object, not a class.";
   }
-
-  # Receive more data
-  my $data = shift;
-
-  # Set the target_path if there's any data there.
-  $self->{ftpsrv} = $data if defined $data;
-
-  return $self->{ftpsrv};
+  
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{ftpsrv} = $data;
+  }
+  elsif ( defined $self->{ftpsrv} ) {
+    return $self->{ftpsrv};
+  }
+  else {
+    return undef;
+  }
 }
 
 sub username {
   my $self = shift;
-  unless ( ref $self ) {
+  my $data;
+  
+  unless ( ref $self eq "BC_NetworkAdmin") {
     croak "Should call target_path with an object, not a class.";
   }
 
-  # Receive more data
-  my $data = shift;
-
-  # Set the target_path if there's any data there.
-  $self->{username} = $data if defined $data;
-
-  return $self->{username};
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{username} = $data;
+  }
+  elsif ( defined $self->{username} ) {
+    return $self->{username};
+  }
+  else {
+    return undef;
+  }
 }
 
 sub password {
   my $self = shift;
-  unless ( ref $self ) {
+  my $data = shift;
+  
+  unless ( ref $self eq "BC_NetworkAdmin") {
     croak "Should call target_path with an object, not a class.";
   }
-
-  # Receive more data
-  my $data = shift;
-
-  # Set the target_path if there's any data there.
-  $self->{password} = $data if defined $data;
-
-  return $self->{password};
+  
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{password} = $data;
+  }
+  elsif ( defined $self->{password} ) {
+    return $self->{password};
+  }
+  else {
+    return undef;
+  }
 }
 
 sub Download {

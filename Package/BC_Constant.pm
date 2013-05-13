@@ -75,6 +75,9 @@ Bugs: N/A
 
 =end html
 
+=head2 Revision
+
+N/A
 
 =head2 Comments in Code
 
@@ -87,17 +90,20 @@ use utf8;
 use Carp;
 use base 'Exporter';
 
+# For BC_ExcelAdmin.pm
 use constant Excel_Format_Default                        => 0;
 use constant Excel_Format_Table                          => 1;
 use constant Excel_Format_Table_No_Header_But_With_Index => 2;
 use constant Excel_Format_Table_With_Header_But_No_Index => 3;
 use constant Excel_Format_Table_With_Header_And_Index    => 4;
 
+
 our @EXPORT_OK = qw($Excel_Format_Default
   $Excel_Format_Table
   $Excel_Format_Table_No_Header_But_With_Index
   $Excel_Format_Table_With_Header_But_No_Index
-  $Excel_Format_Table_With_Header_And_Index);
+  $Excel_Format_Table_With_Header_And_Index
+  );
 
 1;
 

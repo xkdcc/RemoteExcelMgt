@@ -65,7 +65,7 @@ Bugs: N/A
      bc_math (BC_Math class)
   4. Object attributes:
      parser             (Spreadsheet::ParseExcel::SaveParser->new())
-     workbook_orig      (Spreadsheet::ParseExcel::SaveParser->new()->Parse("Your Excel File"))
+     workbook_orig      (ref as Spreadsheet::ParseExcel::SaveParser::Workbook, Spreadsheet::ParseExcel::SaveParser->new()->Parse("Your Excel File"))
      target_excel_name  (Excel file name)
      range              (Complex data structure, please find more in code)
      sheet_header       (array)     
@@ -98,7 +98,7 @@ Bugs: N/A
 
 <B>Version:</B>&nbsp&nbsp 1.0                  </br>
 <B>Created:</B>&nbsp&nbsp&nbsp2013-4-28 15:33:16 </br>
-<B>Revision:</B>&nbsp 1.01                      </br>
+<B>Revision:</B>&nbsp 1.02                      </br>
 
 =end html
 
@@ -108,6 +108,23 @@ Revision: 1.01 (2013-5-8 21:43:47)
 Log:
 1. Change Perl from 5.8.8 to 5.16.3.1063.
 2. Since cpan install Switch under 5.16.3.1063 failed, abandond using switch.
+
+Revision: 1.02 (2013-5-12 20:48:34)
+Log:
+1. Refactor the flow in Class attributes subroutine, to be more clear and reasonable.
+2. Now we can change range for the same instance.
+   Originally, you can't change the range of an instance after you set it.
+3. Now range() can provide more calling format, I appended:
+   range(sheet_index)
+   range(sheet_index, r_start_number) -- start from row r, all columns
+   range(sheet_index, c_start_number) -- start from col c, all rows
+   range(sheet_index, r_start_number, c_start_number) -- start from row r and col c, all left
+4. Fix bug:
+   I forgot to check $href in sub:
+   _format_table
+   _format_table_with_header_and_index
+   _format_table_with_header_but_no_index
+    
 
 =head2 Comments in Code
 
@@ -126,10 +143,6 @@ Please refer to my post at http://bbs.chinaunix.net/thread-4080028-1-1.html.
 A good article can be referred at http://www.jb51.net/article/16041.htm.
 
 =cut
-
-# TODO: [Brant][2013-5-9 14:16:54]
-# 1. refactor to compose ranges for sheets.
-#
 
 use strict;
 use warnings;
@@ -153,6 +166,10 @@ sub new {
   my ($class_name) = shift;
 
   my $self = {@_};
+
+  croak "You must provide target_excel_name when you want to new a BC_ExcelAdmin instance.\n"
+    unless defined $self->{target_excel_name};
+
   bless( $self, $class_name );
   $self->_init();
   $bc_math = BC_Math->new();
@@ -163,7 +180,7 @@ sub new {
 sub _init {
   my $self = shift;
   $self->parser( Spreadsheet::ParseExcel::SaveParser->new() );
-  $self->workbook_orig( $self->parser->Parse( $self->target_excel_name() ) );
+  $self->workbook_orig( $self->parser->Parse( $self->target_excel_name ) );
 
   return 0;
 }
@@ -175,12 +192,21 @@ sub parser {
   }
 
   # Receive more data
-  my $data = shift;
+  my $data;
 
-  # Set the target_path if there's any data there.
-  $self->{parser} = $data if defined $data;
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
 
-  return $self->{parser};
+    # Need set hash for $self
+    # Here we don't need care whether defined $data
+    return $self->{parser} = $data;
+  }
+  elsif ( defined $self->{parser} ) {
+    return $self->{parser};
+  }
+  else {
+    return undef;
+  }
 }
 
 sub workbook_orig {
@@ -190,12 +216,18 @@ sub workbook_orig {
   }
 
   # Receive more data
-  my $data = shift;
+  my $data;
 
-  # Set the target_path if there's any data there.
-  $self->{workbook_orig} = $data if defined $data;
-
-  return $self->{workbook_orig};
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{workbook_orig} = $data;
+  }
+  elsif ( defined $self->{workbook_orig} ) {
+    return $self->{workbook_orig};
+  }
+  else {
+    return undef;
+  }
 }
 
 sub target_excel_name {
@@ -207,10 +239,16 @@ sub target_excel_name {
   # Receive more data
   my $data = shift;
 
-  # Set the target_path if there's any data there.
-  $self->{target_excel_name} = $data if defined $data;
-
-  return $self->{target_excel_name};
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{target_excel_name} = $data;
+  }
+  elsif ( defined $self->{target_excel_name} ) {
+    return $self->{target_excel_name};
+  }
+  else {
+    return undef;
+  }
 }
 
 # sheet_header is an array
@@ -268,6 +306,10 @@ sub sheet_header {
 # Range should be array
 # Didn't recommend to set range as all worksheets, it cost too much time and memory
 # Usage:
+# range(sheet_index)
+# range(sheet_index, r_start_number) -- start from row r, all columns
+# range(sheet_index, c_start_number) -- start from col c, all rows
+# range(sheet_index, r_start_number, c_start_number) -- start from row r and col c, all left
 # range(sheet_index, r_start_number, r_end_number)
 # range(sheet_index, c_start_number, c_end_number)
 # range(sheet_index, r_start_number, r_end_number, c_start_number, c_end_number)
@@ -278,8 +320,6 @@ sub range {
   unless ( ref $self eq "BC_ExcelAdmin" ) {
     croak "Should call range with an object, not a class.";
   }
-
-  return $self->{range} if defined $self->{range};
 
   # Hash array
   # %range = ("row_range" => [row_min, row_max],
@@ -299,14 +339,23 @@ sub range {
     col_range => [ 0, 0 ],
   );
 
-  my $sheet_index     = shift;
-  my @given_row_range = ( shift, shift );
-  my @given_col_range = ( shift, shift );
-
-  # Initiate $sheet_header
-  $self->sheet_header($sheet_index) if defined $sheet_index;
-
+  my $sheet_index;
+  my ( @given_row_range, @given_col_range ) = ();
   my $ws_count = $self->workbook_orig()->worksheet_count();
+  
+  if ( scalar(@_) == 0 && ref $self->{range} ) {
+    return $self->{range};
+  }
+  elsif ( scalar(@_) == 0 && !ref $self->{range} ) {
+    croak "You must set range(with sheet_index) before you use it!\n";
+  }
+
+  if ( scalar(@_) >= 1 ) {
+    $sheet_index = shift;
+  }
+  else {
+    croak "Bad parameters you used! @_\n";
+  }
 
   # Check index
   if ( $sheet_index < 0
@@ -318,39 +367,93 @@ sub range {
       . ( $ws_count - 1 ) . "].\n";
   }
 
-  my $ws = $self->workbook_orig()->worksheet($sheet_index);
+  # Initiate $sheet_header
+  $self->sheet_header($sheet_index);
 
+  my $ws               = $self->workbook_orig()->worksheet($sheet_index);
   my @target_row_range = $ws->row_range();
   my @target_col_range = $ws->col_range();
 
-  print "get:" . "@target_row_range\n";
-  print "get:" . "@target_col_range\n";
-  print "get:" . "@given_row_range\n";
-  print "get:" . "@given_col_range\n";
-
-  # Fix @given_row_rang and @given_col_range
-  if ( $given_col_range[0] =~ /^r_/
-    && $given_col_range[1] =~ /^r_/
-    && $given_row_range[0] =~ /^c_/
-    && $given_row_range[1] =~ /^c_/ )
-  {
-    my @temp = ();
-    @temp            = @given_row_range;
-    @given_row_range = @given_col_range;
-    @given_col_range = @temp;
+#  print "get target row:" . "@target_row_range\n";
+#  print "get target col:" . "@target_col_range\n";
+  
+  if (scalar(@_) == 0 ) {
+    @given_row_range = @target_row_range;
+    @given_col_range = @target_col_range;    
+  }
+  elsif ( scalar(@_) == 1 ) {
+    if ( $_[0] =~ /^r_/ ) {
+      @given_row_range = ( shift, $target_row_range[1] );
+      @given_col_range = @target_col_range;
+    }
+    elsif ( $_[0] =~ /^c_/ ) {
+      @given_row_range = @target_row_range;
+      @given_col_range = ( shift, $target_col_range[1] );
+    }
+    else {
+      croak "Bad parameters you used! @_\n";
+    }
+  }
+  elsif ( scalar(@_) == 2 ) {
+    if ( $_[0] =~ /^r_/ && $_[1] =~ /^r_/ ) {
+      @given_row_range = ( shift, shift );
+      @given_col_range = @target_col_range;
+    }
+    elsif ( $_[0] =~ /^c_/ && $_[1] =~ /c_/ ) {
+      @given_row_range = @target_row_range;
+      @given_col_range = ( shift, shift );
+    }
+    elsif ( $_[0] =~ /^r_/ && $_[1] =~ /c_/ ) {
+      @given_row_range = ( shift, $target_row_range[1] );
+      @given_col_range = ( shift, $target_col_range[1] );
+    }
+    elsif ( $_[0] =~ /^c_/ && $_[1] =~ /r_/ ) {
+      @given_col_range = ( shift, $target_col_range[1] );
+      @given_row_range = ( shift, $target_row_range[1] );
+    }
+    else {
+      croak "Bad parameters format you used! @_\n";
+    }
+  }
+  elsif ( scalar(@_) == 4 ) {
+    if ( $_[0] =~ /^r_/ && $_[1] =~ /^r_/ && $_[2] =~ /^c_/ && $_[3] =~ /c_/ ) {
+      @given_row_range = ( shift, shift );
+      @given_col_range = ( shift, shift );
+    }
+    elsif ( $_[0] =~ /^c_/
+      && $_[1] =~ /^c_/
+      && $_[2] =~ /^r_/
+      && $_[3] =~ /r_/ )
+    {
+      @given_col_range = ( shift, shift );
+      @given_row_range = ( shift, shift );
+    }
+    else {
+      croak "Bad parameters format you used! @_\n";
+    }
+  }
+  else {
+    croak "Bad parameters you used! @_\n";
   }
 
-  print "fixed:" . "@given_row_range\n";
-  print "fixed:" . "@given_col_range\n";
+#  print "get 1:" . "@given_row_range\n";
+#  print "get 1:" . "@given_col_range\n";
 
   # Strip prefix
-  $given_row_range[0] =~ s/r_//g;
-  $given_row_range[1] =~ s/r_//g;
-  $given_col_range[0] =~ s/c_//g;
-  $given_col_range[1] =~ s/c_//g;
-
-  #  print "Striped:" . "@given_row_range\n";
-  #  print "Striped:" . "@given_col_range\n";
+  if ( $given_row_range[0] =~ /^r_/g ) {
+    $given_row_range[0] =~ s/^r_//g;
+  }
+  if ( $given_row_range[1] =~ /^r_/g ) {
+    $given_row_range[1] =~ s/^r_//g;
+  }
+  if ( $given_col_range[0] =~ /^c_/g ) {
+    $given_col_range[0] =~ s/^c_//g;
+  }
+  if ( $given_col_range[1] =~ /^c_/g ) {
+    $given_col_range[1] =~ s/^c_//g;
+  }
+#  print "Striped:" . "@given_row_range\n";
+#  print "Striped:" . "@given_col_range\n";
 
   BC_ExcelAdmin->get_bc_math()
     ->range_check( \@given_row_range, \@target_row_range );
@@ -360,12 +463,19 @@ sub range {
   $my_range{row_range} = [@given_row_range];
   $my_range{col_range} = [@given_col_range];
 
-  #  print "row range: @{$my_range{row_range}}\n";
-  #  print "col range: @{$my_range{col_range}}\n";
+  print "row range: @{$my_range{row_range}}\n";
+  print "col range: @{$my_range{col_range}}\n";
 
-  #  for my $ele ( keys %my_range ){
-  #        print "xxx $ele: @{ $my_range{$ele} }\n";
-  #  }
+#  for my $ele ( keys %my_range ) {
+#    print "xxx $ele: @{ $my_range{$ele} }\n";
+#  }
+  
+  if ( defined $self->{range}
+    && @{ $self->{range}->{row_range} } ~~ @given_row_range
+    && @{ $self->{range}->{col_range} } ~~ @given_col_range )
+  {
+    return $self->{range};
+  }
 
   # Print by row range as priority
   for my $row ( $given_row_range[0] .. $given_row_range[1] ) {
@@ -447,7 +557,7 @@ sub list_sheet_names {
   my $self  = shift;
   my $index = 0;
 
-  for my $worksheet ( $self->workbook_orig()->worksheets() ) {
+  for my $worksheet ( $self->workbook_orig->worksheets ) {
     print "Worksheet name[" . $index++ . "]: " . $worksheet->get_name() . "\n";
   }
   return 0;
@@ -590,12 +700,22 @@ sub _format_table_with_header_and_index {
         if ( $i == 0 && $self->{range}->{row_range}[0] == 0 ) {
 
           # Construct $col_header
-          push @col_header, $href->value();
+          if ( ref($href) eq "Spreadsheet::ParseExcel::Cell" ) {
+            push @col_header, $href->value();
+          }
+          else {
+            push @col_header, "";
+          }
         }
         else {
 
           # Construct $rows
-          push @rows, $href->value();
+          if ( ref($href) eq "Spreadsheet::ParseExcel::Cell" ) {
+            push @rows, $href->value();
+          }
+          else {
+            push @rows, "";
+          }
         }
       }
       if ( $i == 0 && $self->{range}->{row_range}[0] == 0 ) {
@@ -642,12 +762,22 @@ sub _format_table_with_header_but_no_index {
         if ( $i == 0 && $self->{range}->{row_range}[0] == 0 ) {
 
           # Construct $col_header
-          push @col_header, $href->value();
+          if ( ref($href) eq "Spreadsheet::ParseExcel::Cell" ) {
+            push @col_header, $href->value();
+          }
+          else {
+            push @col_header, "";
+          }
         }
         else {
 
           # Construct $rows
-          push @rows, $href->value();
+          if ( ref($href) eq "Spreadsheet::ParseExcel::Cell" ) {
+            push @rows, $href->value();
+          }
+          else {
+            push @rows, "";
+          }
         }
       }
       if ( $i == 0 && $self->{range}->{row_range}[0] == 0 ) {
@@ -725,13 +855,29 @@ sub _format_table {
       for my $href ( @{ $self->range()->{$key} } ) {
         if ( $i == 0 ) {
 
-          # Construct $col_header
-          push @col_header, $href->value();
+          if ( defined $href && ref($href) eq "Spreadsheet::ParseExcel::Cell" )
+          {
+
+            # Construct $col_header
+            push @col_header, $href->value();
+          }
+          else {
+            push @col_header, "  ";
+          }
         }
         else {
+          if ( defined $href && ref($href) eq "Spreadsheet::ParseExcel::Cell" )
+          {
+
+            # Construct $col_header
+            push @rows, $href->value();
+          }
+          else {
+            push @rows, "  ";
+          }
 
           # Construct $rows
-          push @rows, $href->value();
+
         }
       }
       if   ( $i == 0 ) { $t->setCols(@col_header) }

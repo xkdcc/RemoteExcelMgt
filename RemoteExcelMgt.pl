@@ -93,7 +93,7 @@ Notes here.
 =cut
 
 # TODO: [Brant][2013-5-4 21:03:07]
-# 1. Need perl test
+# 1. Need perl test module.
 # 2. Need exception catch
 # 3. Need well-structured log mechanism
 #
@@ -127,19 +127,101 @@ BEGIN {
 
 }
 
-my $na = BC_NetworkAdmin->new(
-  "ftpsrv"   => "10.200.108.10",
-  "username" => "ss",
-  "password" => "ss",
-);
-
+# Testing without Term::Menus
+#{
+#my $na = BC_NetworkAdmin->new(
+#  "ftpsrv"   => "10.200.108.10",
+#  "username" => "ss",
+#  "password" => "ss",
+#);
+#
 #$na->target_path("/ml.xls");
 #$na->Download();
 
+
 my $local_excel = BC_ExcelAdmin->new( "target_excel_name" => "./ml.xls" );
 $local_excel->list_sheet_names();
-
-
+$local_excel->range(0);
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_No_Header_But_With_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_But_No_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_And_Index );
+$local_excel->sheet_header(0);
+$local_excel->sheet_header(1);
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
+$local_excel->range( 0, "r_5" );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_No_Header_But_With_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_But_No_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_And_Index );
+$local_excel->sheet_header(0);
+$local_excel->sheet_header(1);
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
+$local_excel->range( 0, "r_5" );
+$local_excel->range( 0, "c_3" );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_No_Header_But_With_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_But_No_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_And_Index );
+$local_excel->sheet_header(0);
+$local_excel->sheet_header(1);
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
+$local_excel->range( 0, "c_1", "c_8" );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_No_Header_But_With_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_But_No_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_And_Index );
+$local_excel->sheet_header(0);
+$local_excel->sheet_header(1);
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
+$local_excel->range( 0, "r_2", "r_5" );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_No_Header_But_With_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_But_No_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_And_Index );
+$local_excel->sheet_header(0);
+$local_excel->sheet_header(1);
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
+$local_excel->range( 0, "r_2", "c_3" );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_No_Header_But_With_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_But_No_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_And_Index );
+$local_excel->sheet_header(0);
+$local_excel->sheet_header(1);
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
+$local_excel->range( 0, "c_2", "r_3" );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_No_Header_But_With_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_But_No_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_And_Index );
+$local_excel->sheet_header(0);
+$local_excel->sheet_header(1);
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
+$local_excel->range( 0, "r_3", "r_6", "c_2", "c_8" );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_No_Header_But_With_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_But_No_Index );
+$local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table_With_Header_And_Index );
+$local_excel->sheet_header(0);
+$local_excel->sheet_header(1);
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
 $local_excel->range( 0, "c_0", "c_8", "r_2", "r_5" );
 $local_excel->display_sheet( 0, BC_Constant->Excel_Format_Default );
 $local_excel->display_sheet( 0, BC_Constant->Excel_Format_Table );
@@ -151,6 +233,61 @@ $local_excel->sheet_header(1);
 $local_excel->display_sheet_header(0);
 $local_excel->display_sheet_header(1);
 
+$local_excel->display_sheet_header(0);
+$local_excel->display_sheet_header(1);
+#}
+
+# Code for Term::Menus
+#{
+#my $welcome_msg = "";
+#my @list        = (
+#  'Download files by FTP',
+#  'Upload files to FTP server',
+#  'Operations on local excel file'
+#);
+#my $banner = "Welcome to use RemoteExcelMgt.pl. \n"
+#  . "Copyright 2012 - 2013 Brant Chen (BrantChen2008\@gmail.com), All Rights Reserved\n\n"
+#  . "Please Pick an Item:";
+#my $selection = &pick( \@list, $banner );
+#print "SELECTION = $selection\n";
+#}
+
+#{
+#my %Menu_2=(
+#
+#      Label  => 'Menu_2',
+#      Item_1 => {
+#
+#         Text   => "]Previous[ is a ]Convey[ Utility",
+#         Convey => [ 'Good','Bad' ]
+#      },
+#
+#      Select => 'One',
+#      Banner => "\n   Choose an Answer :"
+#   );
+#
+#   my %Menu_1=(
+#
+#      Label  => 'Menu_1',
+#      Item_1 => {
+#
+#         Text   => "/bin/Utility - ]Convey[",
+#         Convey => [ `dir C:\\` ],
+#         Result => \%Menu_2,
+#
+#      },
+#
+#      Select => 'One',
+#      Banner => "\n   Choose a /bin Utility :"
+#   );
+#
+#my @selections = &Menu( \%Menu_1 );
+#print "SELECTIONS=@selections\n";
+#}
+
+#my $text;
+#chomp ($text = <STDIN>);
+#print $text;
 
 END {
 
