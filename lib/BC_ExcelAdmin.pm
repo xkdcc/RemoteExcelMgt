@@ -154,7 +154,7 @@ use Spreadsheet::ParseExcel::SaveParser; # Useful when you want to modify Excel.
 use Text::ASCIITable;
 
 use FindBin qw( $RealBin );
-use lib "$RealBin/Package";
+use lib "$RealBin/lib";
 
 use BC_Math;
 use BC_Constant;

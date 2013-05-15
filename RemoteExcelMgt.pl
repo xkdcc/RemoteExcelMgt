@@ -117,7 +117,7 @@ Refer to <a href=http://stackoverflow.com/questions/11687018/a-proper-way-of-usi
 =cut
 
 use FindBin qw( $RealBin );
-use lib "$RealBin/Package";
+use lib "$RealBin/lib/";
 
 use BC_NetworkAdmin;
 use BC_ExcelAdmin;
