@@ -79,8 +79,6 @@ Bugs: N/A
 
 N/A
 
-=head2 Comments in Code
-
 =cut
 
 
@@ -106,10 +104,3 @@ our @EXPORT_OK = qw($Excel_Format_Default
   );
 
 1;
-
-=begin html
-
-</br>
-</br>
-
-=end html

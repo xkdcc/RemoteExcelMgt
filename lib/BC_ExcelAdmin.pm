@@ -104,11 +104,14 @@ Bugs: N/A
 
 =head2 Revision
 
+=begin html
+
+<pre>
 Revision: 1.01 (2013-5-8 21:43:47)
 Log:
 1. Change Perl from 5.8.8 to 5.16.3.1063.
 2. Since cpan install Switch under 5.16.3.1063 failed, abandond using switch.
-
+<br>
 Revision: 1.02 (2013-5-12 20:48:34)
 Log:
 1. Refactor the flow in Class attributes subroutine, to be more clear and reasonable.
@@ -124,7 +127,9 @@ Log:
    _format_table
    _format_table_with_header_and_index
    _format_table_with_header_but_no_index
-    
+</pre>
+
+=end html    
 
 =head2 Comments in Code
 

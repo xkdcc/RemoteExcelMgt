@@ -124,9 +124,30 @@ Bugs: N/A
 
 <h2 id="Revision">Revision</h2>
 
-<p>Revision: 1.01 (2013-5-8 21:43:47) Log: 1. Change Perl from 5.8.8 to 5.16.3.1063. 2. Since cpan install Switch under 5.16.3.1063 failed, abandond using switch.</p>
 
-<p>Revision: 1.02 (2013-5-12 20:48:34) Log: 1. Refactor the flow in Class attributes subroutine, to be more clear and reasonable. 2. Now we can change range for the same instance. Originally, you can&#39;t change the range of an instance after you set it. 3. Now range() can provide more calling format, I appended: range(sheet_index) range(sheet_index, r_start_number) -- start from row r, all columns range(sheet_index, c_start_number) -- start from col c, all rows range(sheet_index, r_start_number, c_start_number) -- start from row r and col c, all left 4. Fix bug: I forgot to check $href in sub: _format_table _format_table_with_header_and_index _format_table_with_header_but_no_index</p>
+
+<pre>
+Revision: 1.01 (2013-5-8 21:43:47)
+Log:
+1. Change Perl from 5.8.8 to 5.16.3.1063.
+2. Since cpan install Switch under 5.16.3.1063 failed, abandond using switch.
+<br>
+Revision: 1.02 (2013-5-12 20:48:34)
+Log:
+1. Refactor the flow in Class attributes subroutine, to be more clear and reasonable.
+2. Now we can change range for the same instance.
+   Originally, you can't change the range of an instance after you set it.
+3. Now range() can provide more calling format, I appended:
+   range(sheet_index)
+   range(sheet_index, r_start_number) -- start from row r, all columns
+   range(sheet_index, c_start_number) -- start from col c, all rows
+   range(sheet_index, r_start_number, c_start_number) -- start from row r and col c, all left
+4. Fix bug:
+   I forgot to check $href in sub:
+   _format_table
+   _format_table_with_header_and_index
+   _format_table_with_header_but_no_index
+</pre>
 
 <h2 id="Comments-in-Code">Comments in Code</h2>
 

@@ -79,8 +79,6 @@ Revision: 1.01 (2013-5-12 20:48:34)
 Log:
 1. Refactor the flow in Class attributes subroutine, to be more clear and reasonable.
 
-=head2 Comments in Code
-
 =cut
 
 use strict;
@@ -206,10 +204,3 @@ sub Download {
 
 1;
 
-
-=begin html
-
-</br>
-</br>
-
-=end html

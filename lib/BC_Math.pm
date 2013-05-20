@@ -80,8 +80,6 @@ Revision: 1.01 (2013-5-12 20:48:34)
 Log:
 1. Add judge for range_check().
 
-=head2 Comments in Code
-
 =cut
 
 use strict;
@@ -136,11 +134,3 @@ sub range_check {
 }
 
 1;
-
-=begin html
-
-</br>
-</br>
-
-=end html
-
