@@ -120,13 +120,35 @@ use lib "$RealBin/lib/";
 
 use BC_NetworkAdmin;
 use BC_ExcelAdmin;
+use BC_Term_Menus;
 use BC_Constant;
 
 BEGIN {
 
 }
 
-print "\nHey, what's up?\n";
+print "\n\n";
+
+#my %main_menu = {
+#  mi01_download  => "Download files by FTP",
+#  mi02_upload    => "Upload files to FTP",
+#  mi03_ope_excel => "Operations on local excel file",
+#};
+
+while (1) {
+  my @main_menu = ("Download files by FTP", "Upload files to FTP", "Operations on local excel file");
+  
+  my $bc_tm = BC_Term_Menus->new(
+  banner => "\n\nWelcome to use RemoteExcel.pl written by Brant Chen.\n\n\n\n",
+  menu_list => \@main_menu,
+  );
+  my $ans = $bc_tm->menu();
+  print "ans: $ans\n";
+  
+  
+  
+  last;
+}
 
 END {
 

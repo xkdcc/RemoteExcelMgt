@@ -95,12 +95,19 @@ use constant Excel_Format_Table_No_Header_But_With_Index => 2;
 use constant Excel_Format_Table_With_Header_But_No_Index => 3;
 use constant Excel_Format_Table_With_Header_And_Index    => 4;
 
+# For BC_Term_Menus.pm
+use constant Term_Menus_Bullet_Numarical                 => 0;
+use constant Term_Menus_Bullet_Alpha                     => 1;
+
+
 
 our @EXPORT_OK = qw($Excel_Format_Default
   $Excel_Format_Table
   $Excel_Format_Table_No_Header_But_With_Index
   $Excel_Format_Table_With_Header_But_No_Index
   $Excel_Format_Table_With_Header_And_Index
+  $Term_Menus_Bullet_Numarical
+  $Term_Menus_Bullet_Alpha
   );
 
 1;

@@ -107,6 +107,11 @@ use warnings;
 use utf8;
 use Carp;
 
+use FindBin qw( $RealBin );
+use lib "$RealBin/lib";
+
+use BC_Constant;
+
 sub new {
   my ($class_name) = shift;
 
@@ -114,21 +119,23 @@ sub new {
   bless( $self, $class_name );
   
   # Set default value if not defined.
-  $self->banner("Welcome to use RemoteExcel.pl written by Brant Chen.\n\n"); 
+  if ( ! defined $self->banner) {
+    $self->banner("");
+  }  
   if ( ! defined $self->delimiter) {
     $self->delimiter(")");
   }  
-  if ( ! defined $self->ask_text) {
+  if ( ! defined $self->ask_hint_text) {
     $self->ask_text("Please choose one of the following options:\n");
   }
-  if ( ! defined $self->answer_text) {
+  if ( ! defined $self->ask_text) {
     $self->answer_text("Please enter a choice: ");
   }
-  if ( ! defined $self->echo_answer_text) {
-    $self->echo_answer_text("Your choice: ");
+  if ( ! defined $self->echo_choice_text) {
+    $self->echo_choice_text("Your choice: ");
   }
-  if ( ! defined $self->trys_time) {
-    $self->trys_time("3");
+  if ( ! defined $self->try_time) {
+    $self->try_time("3");
   }
   if ( ! defined $self->too_many_tries_text) {
     $self->too_many_tries("You've tried too many times.\n");
@@ -136,7 +143,10 @@ sub new {
   if ( ! defined $self->no_option_text) {
     $self->no_option_text("That's not one of the available options.\n");
   }
-  $self->tried("0");
+  $self->tried("0"); 
+  if ( ! defined $self->bullet_type) {
+    $self->bullet_type = BC_Constant->Term_Menus_Bullet_Numarical;
+  }
   
   $self->_init();
 
@@ -148,210 +158,286 @@ sub _init {
 }
 
 sub banner {
-  my $self = shift;
-
-  # Receive more data
-  my $data = shift;
+  my $self = shift;  
 
   unless ( ref $self eq "BC_Term_Menus" ) {
     croak "Should call target_path with an object, not a class.";
   }
-
-  if ( scalar(@_) != 1 ) {
-    croak "Argv count should be 1.";
+  # Receive more data
+  my $data;
+  
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{banner} = $data;
   }
-
-  if ( !defined $data ) {
-    return $self->{banner} = "Welcome to use RemoteExcel.pl written by Brant Chen.\n\n";
+  elsif ( scalar(@_) == 0 && defined $self->{banner} ) {
+    return $self->{banner};
   }
-
-  # Set the banner if there's any data there.
-  return $self->{banner} = $data;
+  else {
+    return $self->{banner}="Welcome to use RemoteExcel.pl written by Brant Chen.\n\n";
+  }
 }
 
 sub delimiter {
-  my $self = shift;
-
-  # Receive more data
-  my $data = shift;
+  my $self = shift; 
 
   unless ( ref $self eq "BC_Term_Menus" ) {
     croak "Should call target_path with an object, not a class.";
   }
+  my $data;
 
-  if ( scalar(@_) != 1 ) {
-    croak "Argv count should be 1.";
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{delimiter} = $data;
   }
-
-  if ( !defined $data ) {
-    return $self->{delimiter} = ")";
+  elsif ( scalar(@_) == 0 && defined $self->{delimiter} ) {
+    return $self->{delimiter};
   }
+  else {
+    return $self->{delimiter}=")";
+  }
+}
 
-  # Set the delimiter if there's any data there.
-  return $self->{delimiter} = $data;
+sub ask_hint_text {
+  my $self = shift;
+
+  unless ( ref $self eq "BC_Term_Menus" ) {
+    croak "Should call target_path with an object, not a class.";
+  }
+  my $data;
+
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{ask_hint_text} = $data;
+  }
+  elsif ( scalar(@_) == 0 && defined $self->{ask_hint_text} ) {
+    return $self->{ask_hint_text};
+  }
+  else {
+    return $self->{ask_hint_text}="Please choose one of the following options:\n";
+  }
 }
 
 sub ask_text {
   my $self = shift;
 
-  # Receive more data
-  my $data = shift;
-
   unless ( ref $self eq "BC_Term_Menus" ) {
     croak "Should call target_path with an object, not a class.";
   }
+  my $data;
 
-  if ( scalar(@_) != 1 ) {
-    croak "Argv count should be 1.";
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{ask_text} = $data;
   }
-
-  if ( !defined $data ) {
-    return $self->{ask_text} = "Please choose one of the following options:\n";
+  elsif ( scalar(@_) == 0 && defined $self->{ask_text} ) {
+    return $self->{ask_text};
   }
-
-  # Set the banner if there's any data there.
-  return $self->{ask_text} = $data;
+  else {
+    return $self->{ask_text}="Please enter a choice: ";
+  }
 }
 
-sub answer_text {
+sub echo_choice_text {
   my $self = shift;
-
-  # Receive more data
-  my $data = shift;
-
+  
   unless ( ref $self eq "BC_Term_Menus" ) {
     croak "Should call target_path with an object, not a class.";
   }
+  my $data;
 
-  if ( scalar(@_) != 1 ) {
-    croak "Argv count should be 1.";
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{echo_choice_text} = $data;
   }
-
-  if ( !defined $data ) {
-    return $self->{answer_text} = "Please enter a choice: ";
+  elsif ( scalar(@_) == 0 && defined $self->{echo_choice_text} ) {
+    return $self->{echo_choice_text};
   }
-
-  # Set the banner if there's any data there.
-  return $self->{answer_text} = $data;
+  else {
+    return $self->{echo_choice_text}="Your choice: ";
+  }
 }
 
-sub echo_answer_text {
+sub try_time {
   my $self = shift;
-
-  # Receive more data
-  my $data = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
     croak "Should call target_path with an object, not a class.";
   }
+  my $data;
 
-  if ( scalar(@_) != 1 ) {
-    croak "Argv count should be 1.";
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{try_time} = $data;
   }
-
-  if ( !defined $data ) {
-    return $self->{echo_answer_text} = "Your choice: ";
+  elsif ( scalar(@_) == 0 && defined $self->{try_time} ) {
+    return $self->{try_time};
   }
-
-  # Set the banner if there's any data there.
-  return $self->{echo_answer_text} = $data;
-}
-
-sub trys_time {
-  my $self = shift;
-
-  # Receive more data
-  my $data = shift;
-
-  unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+  else {
+    return $self->{try_time}=3;
   }
-
-  if ( scalar(@_) != 1 ) {
-    croak "Argv count should be 1.";
-  }
-
-  if ( !defined $data ) {
-    return $self->{trys_time} = 3;
-  }
-
-  # Set the banner if there's any data there.
-  return $self->{trys_time} = $data;
 }
 
 sub too_many_tries_text {
   my $self = shift;
 
-  # Receive more data
-  my $data = shift;
-
   unless ( ref $self eq "BC_Term_Menus" ) {
     croak "Should call target_path with an object, not a class.";
   }
+  my $data;
 
-  if ( scalar(@_) != 1 ) {
-    croak "Argv count should be 1.";
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{too_many_tries_text} = $data;
   }
-
-  if ( !defined $data ) {
-    return $self->{too_many_tries_text} = "You've tried too many times.\n";
+  elsif ( scalar(@_) == 0 && defined $self->{too_many_tries_text} ) {
+    return $self->{too_many_tries_text};
   }
-
-  # Set the banner if there's any data there.
-  return $self->{too_many_tries_text} = $data;
+  else {
+    return $self->{too_many_tries_text}="You've tried too many times.\n";
+  }
 }
 
 sub no_option_text {
   my $self = shift;
 
-  # Receive more data
-  my $data = shift;
-
   unless ( ref $self eq "BC_Term_Menus" ) {
     croak "Should call target_path with an object, not a class.";
   }
+  my $data;
 
-  if ( scalar(@_) != 1 ) {
-    croak "Argv count should be 1.";
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{no_option_text} = $data;
   }
-
-  if ( !defined $data ) {
-    return $self->{no_option_text} = "That's not one of the available options.\n";
+  elsif ( scalar(@_) == 0 && defined $self->{no_option_text} ) {
+    return $self->{no_option_text};
   }
-
-  # Set the banner if there's any data there.
-  return $self->{no_option_text} = $data;
+  else {
+    return $self->{no_option_text}="That's not one of the available options. Please try again.\n\n";
+  }
 }
 
 sub tried {
   my $self = shift;
 
-  # Receive more data
-  my $data = shift;
+  unless ( ref $self eq "BC_Term_Menus" ) {
+    croak "Should call target_path with an object, not a class.";
+  }
+  my $data;
+
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    return $self->{tried} = $data;
+  }
+  elsif ( scalar(@_) == 0 && defined $self->{tried} ) {
+    return $self->{tried};
+  }
+  else {
+    return undef;
+  }
+}
+
+sub bullet_type {
+  my $self = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
     croak "Should call target_path with an object, not a class.";
   }
-
-  if ( scalar(@_) != 1 ) {
-    croak "Argv count should be 1.";
+  my $data;
+  
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    if ($data != BC_Constant->Term_Menus_Bullet_Numarical && $data != BC_Constant->Term_Menus_Bullet_Alpha) {
+      croak "Term menus bullet type should only be Term_Menus_Bullet_Numarical(0) or Term_Menus_Bullet_Alpha(1).";    
+    }
+    return $self->{bullet_type} = $data;
   }
-
-  if ( !defined $data ) {
-    return $self->{tried} = 0;
+  elsif ( scalar(@_) == 0 && defined $self->{bullet_type} ) {
+    return $self->{bullet_type};
   }
+  else {
+    return $self->{bullet_type} = BC_Constant->Term_Menus_Bullet_Numarical;
+  }
+}
 
-  # Set the banner if there's any data there.
-  return $self->{tried} = $data;
+sub menu_list {  
+  my $self = shift;
+
+  unless ( ref $self eq "BC_Term_Menus" ) {
+    croak "Should call target_path with an object, not a class.";
+  }
+  my $data;
+
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    if ( !defined $data || ref $data ne "ARRAY") {
+      croak "You should provide the menu items list and it's an array ref.";
+    } 
+    return $self->{menu_list} = $data;
+  }
+  elsif ( scalar(@_) == 0 && defined $self->{menu_list} ) {
+    return $self->{menu_list};
+  }
+  else {
+    return undef;
+  }
 }
 
 sub menu {
   my $self = shift;
+  my $answer;
+  
+  unless ( ref $self eq "BC_Term_Menus" ) {
+    croak "Should call parser with an object, not a class.";
+  }
+  
   # Create a default self if we didn't get one
-  $self = BC_Term_Menus->new() if(!defined($self) or !ref($self)); 
+  if(!defined($self) or !ref($self)) {
+    $self = BC_Term_Menus->new();
+  } 
   
+  system "cls";
+  print $self->banner;
+  print $self->ask_hint_text;
   
-  return $self->menu;
+  #print "@{$self->menu_list}\n";
+  
+  if ($self->bullet_type == BC_Constant->Term_Menus_Bullet_Alpha) {  
+  }
+  else {
+    if ($self->bullet_type != BC_Constant->Term_Menus_Bullet_Numarical) {
+      print "Warning: You provide bad bullet type. I will use Term_Menus_Bullet_Numarical by default\n";
+    }
+    #for my $i (0..$#)
+    
+    my $i=0;
+  
+    map {s/(^)(.*)($)/++$i . $self->delimiter . " " . $1 . $2 . $3 . "\n";/ge} @{$self->menu_list};
+    {
+      local $"='';
+      print "@{$self->menu_list}\n";
+    }
+    while (1) {
+      print $self->ask_text();
+      $answer = <STDIN>;
+      chomp $answer;
+      if ( $answer =~/[^0-9]+/ || $answer < 1 || $answer > scalar (@{$self->menu_list})) {
+        $self->tried($self->tried + 1);
+        if ($self->tried >= $self->try_time) {
+          print $self->echo_choice_text() . $answer . "\n";
+          print $self->too_many_tries_text();
+          exit 0;
+        }
+        print $self->echo_choice_text() . $answer . "\n";
+        print $self->no_option_text();
+      }
+      else {
+        print $self->echo_choice_text() . $answer . "\n";
+        return $answer;
+      }
+    }    
+  }
 }
 
 
