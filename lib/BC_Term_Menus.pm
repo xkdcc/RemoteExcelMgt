@@ -111,6 +111,7 @@ use FindBin qw( $RealBin );
 use lib "$RealBin/lib";
 
 use BC_Constant;
+use BC_OS_Utility;
 
 sub new {
   my ($class_name) = shift;
@@ -161,7 +162,7 @@ sub banner {
   my $self = shift;  
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call banner with an object, not a class.";
   }
   # Receive more data
   my $data;
@@ -182,7 +183,7 @@ sub delimiter {
   my $self = shift; 
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call delimiter with an object, not a class.";
   }
   my $data;
 
@@ -202,7 +203,7 @@ sub ask_hint_text {
   my $self = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call ask_hint_text with an object, not a class.";
   }
   my $data;
 
@@ -222,7 +223,7 @@ sub ask_text {
   my $self = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call ask_text with an object, not a class.";
   }
   my $data;
 
@@ -242,7 +243,7 @@ sub echo_choice_text {
   my $self = shift;
   
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call echo_choice_text with an object, not a class.";
   }
   my $data;
 
@@ -262,7 +263,7 @@ sub try_time {
   my $self = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call try_time with an object, not a class.";
   }
   my $data;
 
@@ -278,11 +279,57 @@ sub try_time {
   }
 }
 
+sub multi_menu_item {
+  my $self = shift;
+
+  unless ( ref $self eq "BC_Term_Menus" ) {
+    croak "Should call multi_menu_item with an object, not a class.";
+  }
+  my $data;
+
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    if ($data != BC_Constant->Term_Menus_Multi_Menu_Items && $data != BC_Constant->Term_Menus_Single_Menu_Items) {
+      return $self->{multi_menu_item}=BC_Constant->Term_Menus_Multi_Menu_Items;      
+    }
+    return $self->{multi_menu_item} = $data;
+  }
+  elsif ( scalar(@_) == 0 && defined $self->{multi_menu_item} ) {
+    return $self->{multi_menu_item};
+  }
+  else {
+    return $self->{multi_menu_item}=BC_Constant->Term_Menus_Multi_Menu_Items;
+  }
+}
+
+sub prt_control {
+  my $self = shift;
+
+  unless ( ref $self eq "BC_Term_Menus" ) {
+    croak "Should call prt_control with an object, not a class.";
+  }
+  my $data;
+
+  if ( scalar(@_) == 1 ) {
+    $data = shift;
+    if ( ! ref $data eq "HASH") {
+      croak "Should be HASH ref.";
+    }    
+    return $self->{prt_control} = $data;
+  }
+  elsif ( scalar(@_) == 0 && ref $self->{prt_control} eq "HASH") {
+    return $self->{prt_control};
+  }
+  else {
+    return undef;
+  }
+}
+
 sub too_many_tries_text {
   my $self = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call too_many_tries_text with an object, not a class.";
   }
   my $data;
 
@@ -302,7 +349,7 @@ sub no_option_text {
   my $self = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call no_option_text with an object, not a class.";
   }
   my $data;
 
@@ -322,7 +369,7 @@ sub tried {
   my $self = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call tried with an object, not a class.";
   }
   my $data;
 
@@ -342,7 +389,7 @@ sub bullet_type {
   my $self = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call bullet_type with an object, not a class.";
   }
   my $data;
   
@@ -365,7 +412,7 @@ sub menu_list {
   my $self = shift;
 
   unless ( ref $self eq "BC_Term_Menus" ) {
-    croak "Should call target_path with an object, not a class.";
+    croak "Should call menu_list with an object, not a class.";
   }
   my $data;
 
@@ -384,6 +431,23 @@ sub menu_list {
   }
 }
 
+# Class method
+sub clear_screen {  
+  my $cmd;
+  
+  if (BC_OS_Utility->check_os() eq "Linux") {
+    $cmd="clear";
+  }
+  elsif (BC_OS_Utility->check_os() eq "Windows") {
+    $cmd="cls";
+  }
+  else {
+    print "Can't recognize OS.\n";
+    $cmd="";
+  }
+  system $cmd;
+}
+
 sub menu {
   my $self = shift;
   my $answer;
@@ -392,14 +456,14 @@ sub menu {
     croak "Should call parser with an object, not a class.";
   }
   
+  BC_Term_Menus->clear_screen();
   # Create a default self if we didn't get one
   if(!defined($self) or !ref($self)) {
     $self = BC_Term_Menus->new();
   } 
   
-  system "cls";
-  print $self->banner;
-  print $self->ask_hint_text;
+  print $self->banner if $self->prt_control->{banner};
+  print $self->ask_hint_text if $self->prt_control->{ask_hint_text};
   
   #print "@{$self->menu_list}\n";
   
@@ -422,18 +486,22 @@ sub menu {
       print $self->ask_text();
       $answer = <STDIN>;
       chomp $answer;
+      # TODO: [Brant][2013-5-22 12:29:37]
+      # 1. check Term_Menus_Single_Menu_Item
+      #
       if ( $answer =~/[^0-9]+/ || $answer < 1 || $answer > scalar (@{$self->menu_list})) {
         $self->tried($self->tried + 1);
         if ($self->tried >= $self->try_time) {
-          print $self->echo_choice_text() . $answer . "\n";
+          print $self->echo_choice_text() . $answer . "\n" if $self->prt_control->{echo_choice_text};
           print $self->too_many_tries_text();
           exit 0;
         }
-        print $self->echo_choice_text() . $answer . "\n";
-        print $self->no_option_text();
+        print $self->echo_choice_text() . $answer . "\n" if $self->prt_control->{echo_choice_text};
+        print $self->no_option_text() if $self->prt_control->{no_option_text};
       }
       else {
-        print $self->echo_choice_text() . $answer . "\n";
+        print $self->echo_choice_text() . $answer . "\n" if $self->prt_control->{echo_choice_text};
+        $self->tried(0);
         return $answer;
       }
     }    

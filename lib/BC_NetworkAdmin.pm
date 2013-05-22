@@ -91,7 +91,19 @@ sub new {
   my ($class_name) = shift;
 
   my $self = {@_};
-  bless( $self, $class_name );
+  bless( $self, $class_name );  
+  
+  if (defined $self->{ftpsrv} && defined $self->{username} && $self->{password}) {
+    if ( ! defined $self->ftpobj($self->{ftpsrv}) ) {
+      croak "Setup ftpobj failed."
+    }
+    if ( ref $self->ftp_login($self->{username}, $self->{password}) ne "Net::FTP") {
+      print "[" . __FILE__ . " Line:" . __LINE__ . "]\n";
+      print "[ERR] BC_NetworkAdmin new failed at \$self->ftp_login.\n" ;
+      return 1; 
+    }
+  }
+  
   $self->_init();
 
   return $self;
@@ -103,15 +115,13 @@ sub _init {
 
 sub target_path {
   my $self = shift;
-  my $data;
   
   unless ( ref $self eq "BC_NetworkAdmin") {
     croak "Should call target_path with an object, not a class.";
   }
   
   if ( scalar(@_) == 1 ) {
-    $data = shift;
-    return $self->{target_path} = $data;
+    return $self->{target_path} = shift;
   }
   elsif ( defined $self->{target_path} ) {
     return $self->{target_path};
@@ -163,7 +173,7 @@ sub username {
 
 sub password {
   my $self = shift;
-  my $data = shift;
+  my $data;
   
   unless ( ref $self eq "BC_NetworkAdmin") {
     croak "Should call target_path with an object, not a class.";
@@ -181,23 +191,111 @@ sub password {
   }
 }
 
+sub ftpobj {
+  my $self = shift;
+  my $data;
+  
+  unless ( ref $self eq "BC_NetworkAdmin") {
+    croak "Should call target_path with an object, not a class.";
+  }
+  
+  if ( scalar(@_) == 1) {
+    $data = shift;    
+    return $self->{ftpobj} = Net::FTP->new($self->ftpsrv(), Debug => 0);
+  }
+  elsif ( defined $self->{ftpobj} and ref $self->{ftpobj} eq "Net::FTP") {
+    return $self->{ftpobj};
+  }
+  else {
+    return undef;
+  }
+}
+
+# Instance method
+sub ftp_login {
+  my $self = shift;
+  
+  unless ( ref $self eq "BC_NetworkAdmin") {
+    croak "Should call target_path with an object, not a class.";
+  }
+  
+  if ( scalar(@_) == 2) {   
+    $self->username(shift);
+    $self->password(shift); 
+    if ( ref $self->ftpobj eq "Net::FTP") {
+      if ( ! $self->ftpobj->login($self->username, $self->password) ) {
+        # Login failed.
+        print "[WAR] Validate user name and password failed.\n";
+        return 1;
+      }
+      return $self->ftp_establish_session($self->{ftpobj});
+    }
+    else {
+      croak "Should set $self->ftpobj at first.";
+    }
+  }
+}
+
+# ftp_establish_session is a ref to $self->ftpobj
+sub ftp_establish_session {
+  my $self = shift;
+  my $data;
+  
+  unless ( ref $self eq "BC_NetworkAdmin") {
+    croak "Should call target_path with an object, not a class.";
+  }
+  
+  if ( scalar(@_) == 1) {
+    $data = shift; 
+    if (ref $data eq "Net::FTP") {   
+      return $self->{ftp_establish_session} = $data;
+    }
+    else {
+      print "[ERR] This is not a Net::FTP ref.\n";
+      return 1;
+    }
+  }
+  elsif ( defined $self->{ftp_establish_session} ) {
+    return $self->{ftp_establish_session};
+  }
+  else {
+    print "[ERR] You need specify a var.\n";
+    return 1;
+  }
+}
+
+# Instance method
+sub ftp_close {
+  my $self = shift;
+  
+  unless ( ref $self eq "BC_NetworkAdmin") {
+    croak "Should call target_path with an object, not a class.";
+  }
+  
+  if ( defined $self->ftp_establish_session) {
+      $self->ftp_establish_session->quit();
+  }
+  return 0;
+}
+
+# Instance method
 sub Download {
   my $self = shift;
   my $ftpobj;
 
-  print 'ftpsrv: ' . $self->ftpsrv() . "\n";
-  print 'username: ' . $self->username() . "\n";
-  print 'password: ' . $self->password() . "\n";
-  print 'target_path: ' . $self->target_path() . "\n";
+  print 'ftpsrv: '      . $self->ftpsrv      . "\n";
+  print 'username: '    . $self->username    . "\n";
+  print 'password: '    . $self->password    . "\n";
+  print 'target_path: ' . $self->target_path . "\n";
 
-  $ftpobj = Net::FTP->new($self->ftpsrv(), Debug => 0);
-  $ftpobj->login($self->username(), $self->password());
-  $ftpobj->binary() or die "Set binary mode failed ", $ftpobj->message;
+  if (not defined $self->ftp_establish_session) {
+    croak "You need set up ftp session before you use any function.";
+  }
+  $self->ftp_establish_session->binary() or print "[ERR] Set binary mode failed.", $ftpobj->message;
   #print $ftpobj->dir()  or die "dir failed ", $ftpobj->message;
   # To change to a particular directory on the FTP server, use the cwd method
   # $ftpobj->cwd("/") or die "Change work directory failed ", $ftpobj->message;
-  $ftpobj -> get ($self->target_path())  or die "bin failed ", $ftpobj->message;
-  $ftpobj -> quit;  
+  $self->ftp_establish_session -> get ($self->target_path())  or print "[ERR] Get failed.", $ftpobj->message;
   
   return 0;
 }

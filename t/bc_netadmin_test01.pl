@@ -72,6 +72,10 @@ my $na = BC_NetworkAdmin->new(
   "password" => "ss",
 );
 
+if (ref $na ne "BC_NetworkAdmin"){
+  croak "BC_NetworkAdmin->new failed.\n";
+}
+
 $na->target_path("/LOC_Machines_List.xls");
 $na->Download();
 

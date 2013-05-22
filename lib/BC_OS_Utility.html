@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>BC_Constant</title>
+<title>BC_OS_Utility</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link rev="made" href="mailto:" />
 </head>
@@ -12,7 +12,7 @@
 
 
 <ul id="index">
-  <li><a href="#BC_Constant.pm">BC_Constant.pm</a>
+  <li><a href="#BC_OS_Utility.pm">BC_OS_Utility.pm</a>
     <ul>
       <li><a href="#COPYRIGHT">COPYRIGHT</a></li>
       <li><a href="#SYNOPSIS">SYNOPSIS</a></li>
@@ -28,7 +28,7 @@
   </li>
 </ul>
 
-<h1 id="BC_Constant.pm">BC_Constant.pm</h1>
+<h1 id="BC_OS_Utility.pm">BC_OS_Utility.pm</h1>
 
 <h2 id="COPYRIGHT">COPYRIGHT</h2>
 
@@ -36,11 +36,11 @@
 
 <h2 id="SYNOPSIS">SYNOPSIS</h2>
 
-<p>BC_Constant.pm.</p>
+<p>BC_OS_Utility.pm.</p>
 
 <h2 id="DESCRIPTION">DESCRIPTION</h2>
 
-<p>Define my constants.</p>
+<p>Encapsulate some OS functions I need.</p>
 
 <h2 id="USAGE">USAGE</h2>
 
@@ -67,9 +67,8 @@ Bugs: N/A
 <table border=0>
  <tr>  <td width=626 valign=top style='width:469.8pt;border:solid #FFD966 1.0pt;background:#FFF2CC;'>   <p> 
  <pre>
-  I tried to use Readonly for define constant in Perl. But met a problem which raised by other at
-  http://stackoverflow.com/questions/736260/how-do-i-export-readonly-variables-with-mod-perl.
-  So I have to give it up.
+  To me, those methods in this package should be Class Methods, because they could be called without newing a instance.
+  But I didn't know how to implement Class Method in Perl... Wait some time.
  </pre>
  </p>  </td> </tr>
 </table>
@@ -86,12 +85,12 @@ Bugs: N/A
 
 
 <B>Version:</B>&nbsp&nbsp 1.0                  </br>
-<B>Created:</B>&nbsp&nbsp 2013-5-7 17:43:11 </br>
+<B>Created:</B>&nbsp&nbsp 2013-5-22 11:11:30 </br>
 <B>Revision:</B>&nbsp 1.0                      </br>
 
 <h2 id="Revision">Revision</h2>
 
-<p>N/A</p>
+<p>Revision:</p>
 
 
 </body>

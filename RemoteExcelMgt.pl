@@ -127,25 +127,48 @@ BEGIN {
 
 }
 
-print "\n\n";
+my $na_ftp = BC_NetworkAdmin->new();
 
-#my %main_menu = {
-#  mi01_download  => "Download files by FTP",
-#  mi02_upload    => "Upload files to FTP",
-#  mi03_ope_excel => "Operations on local excel file",
-#};
+print "\n\n";
 
 while (1) {
   my @main_menu = ("Download files by FTP", "Upload files to FTP", "Operations on local excel file");
   
   my $bc_tm = BC_Term_Menus->new(
-  banner => "\n\nWelcome to use RemoteExcel.pl written by Brant Chen.\n\n\n\n",
-  menu_list => \@main_menu,
+    banner => "\n\nWelcome to use RemoteExcel.pl written by Brant Chen.\n\n\n\n",
+    menu_list => \@main_menu,
+    clear_screen => 1,
+    multi_menu_item => 1, # 0 means single_menu_item need input.
+    prt_control => {
+      banner => 1,
+      ask_hint_text => 1,
+      echo_choice_text => 1,
+      no_option_text => 1,
+    }
   );
   my $ans = $bc_tm->menu();
-  print "ans: $ans\n";
   
-  
+  if ($ans == 1) { # Download
+    print "FTP server ip or host name: ";
+    $na_ftp->ftpsrv(chomp ($ans=<STDIN>));
+    if ( ! defined $na_ftp->ftpobj($na_ftp->ftpsrv) ) {
+      
+    }
+    
+    print "FTP user name: ";
+    $na_ftp->username(chomp ($ans=<STDIN>));
+    print "FTP password: ";
+    $na_ftp->password(chomp ($ans=<STDIN>));
+    
+    print "Target File path: ";
+    $na_ftp->target_path(chomp ($ans=<STDIN>));
+  }
+  elsif ($ans == 2) { # Upload
+    
+  }
+  elsif ($ans == 3) { # Operations
+    
+  }
   
   last;
 }

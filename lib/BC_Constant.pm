@@ -98,6 +98,8 @@ use constant Excel_Format_Table_With_Header_And_Index    => 4;
 # For BC_Term_Menus.pm
 use constant Term_Menus_Bullet_Numarical                 => 0;
 use constant Term_Menus_Bullet_Alpha                     => 1;
+use constant Term_Menus_Multi_Menu_Items                 => 1;
+use constant Term_Menus_Single_Menu_Item                 => 0;
 
 
 
@@ -108,6 +110,8 @@ our @EXPORT_OK = qw($Excel_Format_Default
   $Excel_Format_Table_With_Header_And_Index
   $Term_Menus_Bullet_Numarical
   $Term_Menus_Bullet_Alpha
+  $Term_Menus_Multi_Menu_Items
+  $Term_Menus_Single_Menu_Item
   );
 
 1;

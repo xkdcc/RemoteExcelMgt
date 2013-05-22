@@ -10,8 +10,9 @@ To remote update team's LOC_Machines_List.xls.
 
 REQUIREMENTS
 
-Need:
+Need modules from CPAN:
 Spreadsheet::ParseExcel
+Spreadsheet::ParseExcel::SaveParser;
 Spreadsheet::WriteExcel
 Text::ASCIITable 
 
