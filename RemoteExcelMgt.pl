@@ -127,41 +127,65 @@ BEGIN {
 
 }
 
+my $ret=0;
 my $na_ftp = BC_NetworkAdmin->new();
 
 print "\n\n";
 
+my @main_menu = ("Download files by FTP", "Upload files to FTP", "Operations on local excel file");
+my $bc_tm = BC_Term_Menus->new(
+  banner => "\n\nWelcome to use RemoteExcel.pl written by Brant Chen.\n\n\n\n",
+  menu_list => \@main_menu,
+  clear_screen => 1,
+  multi_menu_item => 1, # 0 means single_menu_item need input.
+  prt_control => {
+    banner => 1,
+    ask_hint_text => 1,
+    echo_choice_text => 1,
+    no_option_text => 1,
+  }
+);
+
 while (1) {
-  my @main_menu = ("Download files by FTP", "Upload files to FTP", "Operations on local excel file");
   
-  my $bc_tm = BC_Term_Menus->new(
-    banner => "\n\nWelcome to use RemoteExcel.pl written by Brant Chen.\n\n\n\n",
-    menu_list => \@main_menu,
-    clear_screen => 1,
-    multi_menu_item => 1, # 0 means single_menu_item need input.
-    prt_control => {
-      banner => 1,
-      ask_hint_text => 1,
-      echo_choice_text => 1,
-      no_option_text => 1,
-    }
-  );
   my $ans = $bc_tm->menu();
   
   if ($ans == 1) { # Download
     print "FTP server ip or host name: ";
-    $na_ftp->ftpsrv(chomp ($ans=<STDIN>));
-    if ( ! defined $na_ftp->ftpobj($na_ftp->ftpsrv) ) {
-      
+    chomp ($ans = <STDIN>);
+    $na_ftp->ftpsrv($ans);
+    
+    while (1) {   
+      print "FTP user name: ";      
+      chomp ($ans = <STDIN>);
+      $na_ftp->username($ans);
+      print "FTP password: ";     
+      chomp ($ans = <STDIN>);
+      $na_ftp->password($ans);    
+      $ret = $na_ftp->ftp_login(); # Verify username and password
+      if ($ret == 1) {
+        print "[ERR] Login to " . $na_ftp->ftpsrv . " with user name [" .  $na_ftp->username . "] password [" . $na_ftp->password . "] failed.\n";
+        print "      Please try again.\n\n";
+        next;
+      }    
+      last;  
     }
-    
-    print "FTP user name: ";
-    $na_ftp->username(chomp ($ans=<STDIN>));
-    print "FTP password: ";
-    $na_ftp->password(chomp ($ans=<STDIN>));
-    
-    print "Target File path: ";
-    $na_ftp->target_path(chomp ($ans=<STDIN>));
+    print "[INF] Good, log on successfully.\n";
+    while (1) {
+      print "Target File path that you want to download: ";     
+      chomp ($ans = <STDIN>);
+      $na_ftp->target_path($ans);
+      $ret = $na_ftp->Download();
+      if ($ret == 1) {
+        print "[ERR] Get [" . $na_ftp->target_path. "] failed.\n";
+        print $na_ftp->ftp_establish_session->message . "\n"; 
+        print "      Please try again.\n\n";
+        next;
+      }    
+      last; 
+    }
+    print "[INF] Good, download [" . $na_ftp->target_path . "] to [" . $RealBin . "] successfully.\n";
+    next;    
   }
   elsif ($ans == 2) { # Upload
     

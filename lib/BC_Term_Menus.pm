@@ -486,6 +486,7 @@ sub menu {
       print $self->ask_text();
       $answer = <STDIN>;
       chomp $answer;
+      
       # TODO: [Brant][2013-5-22 12:29:37]
       # 1. check Term_Menus_Single_Menu_Item
       #
