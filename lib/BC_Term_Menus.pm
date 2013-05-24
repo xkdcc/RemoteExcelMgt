@@ -451,6 +451,7 @@ sub clear_screen {
 sub menu {
   my $self = shift;
   my $answer;
+  my @m;
   
   unless ( ref $self eq "BC_Term_Menus" ) {
     croak "Should call parser with an object, not a class.";
@@ -476,11 +477,12 @@ sub menu {
     #for my $i (0..$#)
     
     my $i=0;
-  
-    map {s/(^)(.*)($)/++$i . $self->delimiter . " " . $1 . $2 . $3 . "\n";/ge} @{$self->menu_list};
+    @m = @{$self->menu_list};
+    
+    map {s/(^)(.*)($)/++$i . $self->delimiter . " " . $1 . $2 . $3 . "\n";/ge} @m;
     {
       local $"='';
-      print "@{$self->menu_list}\n";
+      print "@m\n";
     }
     while (1) {
       print $self->ask_text();

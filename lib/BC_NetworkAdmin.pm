@@ -127,7 +127,10 @@ use strict;
 use warnings;
 use utf8;
 use Carp;
+use File::Basename;
 use Net::FTP;
+
+use FindBin qw( $RealBin );
 
 sub new {
   my ($class_name) = shift;
@@ -328,11 +331,7 @@ sub ftp_close {
 sub Download {
   my $self = shift;
   my $ftpobj;
-
-  print 'ftpsrv: '      . $self->ftpsrv      . "\n";
-  print 'username: '    . $self->username    . "\n";
-  print 'password: '    . $self->password    . "\n";
-  print 'target_path: ' . $self->target_path . "\n";
+  my $ans;
 
   if (not defined $self->ftp_establish_session) {
     croak "You need set up ftp session before you use any function.";
@@ -341,8 +340,20 @@ sub Download {
   #print $ftpobj->dir()  or die "dir failed ", $ftpobj->message;
   # To change to a particular directory on the FTP server, use the cwd method
   # $ftpobj->cwd("/") or die "Change work directory failed ", $ftpobj->message;
-  #if ( -e $ENV{'PWD'} . )
-  if (! $self->ftp_establish_session -> get ($self->target_path()) ) {
+  if ( -e $RealBin . "/" . basename($self->target_path)) {
+    print "[WAR] Seems you have a local copy with tha same name, do you want to overwrite it? [Y/N]";
+    chomp ($ans=<STDIN>);
+    if (lc $ans eq "n") {
+      return 1;
+    } 
+  }
+  if ($self->target_path ne "") {    
+    if (! $self->ftp_establish_session -> get ($self->target_path()) ) {
+      return 1;
+    }
+  }
+  else {
+    print "[ERR] Please set target_path at first.\n";
     return 1;
   }
   

@@ -168,23 +168,25 @@ while (1) {
         print "      Please try again.\n\n";
         next;
       }    
+      print "[INF] Good, log on successfully.\n";
       last;  
     }
-    print "[INF] Good, log on successfully.\n";
     while (1) {
-      print "Target File path that you want to download: ";     
+      print "Target File path that you want to download (Type quit to exit or back to up menu): ";     
       chomp ($ans = <STDIN>);
+      exit 0 if $ans eq "quit";
+      last if $ans eq "back";
       $na_ftp->target_path($ans);
       $ret = $na_ftp->Download();
       if ($ret == 1) {
         print "[ERR] Get [" . $na_ftp->target_path. "] failed.\n";
-        print $na_ftp->ftp_establish_session->message . "\n"; 
         print "      Please try again.\n\n";
         next;
       }    
+      print "[INF] Good, download [" . $na_ftp->target_path . "] to [" . $RealBin . "] successfully.\n";
+      chomp ($ans = <STDIN>);
       last; 
     }
-    print "[INF] Good, download [" . $na_ftp->target_path . "] to [" . $RealBin . "] successfully.\n";
     next;    
   }
   elsif ($ans == 2) { # Upload
