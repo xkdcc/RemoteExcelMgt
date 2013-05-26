@@ -59,6 +59,10 @@ Need Spreadsheet::ParseExcel, Spreadsheet::WriteExcel
  <tr>  <td width=626 valign=top style='width:469.8pt;border:solid #FFD966 1.0pt;background:#FFF2CC;'>   <p>
 <pre>  
 Notes here.
+Q1: Why we seperate "Download files by FTP" and "Upload files to FTP"?
+A1: Because this script is used to download Excel files at first, then you make your modifications locally, then
+upload your local modified copy to overwrite the ones on FTP servers. So we don't have need to bundle "Downlaod" 
+and "upload" in a menu item. 
 </pre>  
  </p>  </td> </tr>
 </table>
@@ -136,13 +140,13 @@ my @main_menu = ("Download files by FTP", "Upload files to FTP", "Operations on 
 my $bc_tm = BC_Term_Menus->new(
   banner => "\n\nWelcome to use RemoteExcel.pl written by Brant Chen.\n\n\n\n",
   menu_list => \@main_menu,
-  clear_screen => 1,
   multi_menu_item => 1, # 0 means single_menu_item need input.
   prt_control => {
     banner => 1,
     ask_hint_text => 1,
     echo_choice_text => 1,
     no_option_text => 1,
+    clear_screen => 1,
   }
 );
 
@@ -151,25 +155,39 @@ while (1) {
   my $ans = $bc_tm->menu();
   
   if ($ans == 1) { # Download
-    print "FTP server ip or host name: ";
-    chomp ($ans = <STDIN>);
-    $na_ftp->ftpsrv($ans);
     
-    while (1) {   
-      print "FTP user name: ";      
-      chomp ($ans = <STDIN>);
-      $na_ftp->username($ans);
-      print "FTP password: ";     
-      chomp ($ans = <STDIN>);
-      $na_ftp->password($ans);    
-      $ret = $na_ftp->ftp_login(); # Verify username and password
-      if ($ret == 1) {
-        print "[ERR] Login to " . $na_ftp->ftpsrv . " with user name [" .  $na_ftp->username . "] password [" . $na_ftp->password . "] failed.\n";
-        print "      Please try again.\n\n";
-        next;
-      }    
-      print "[INF] Good, log on successfully.\n";
-      last;  
+    while (1) { 
+      if (! defined $na_ftp->ftp_establish_session) {       
+        $ret = $na_ftp->ftp_login(BC_Constant->Ftp_Login_Require_STDIN); # Verify username and password
+        if ($ret == 1) {
+          print "[ERR] Login to " . $na_ftp->ftpsrv . " with user name [" .  $na_ftp->username . "] password [" . $na_ftp->password . "] failed.\n";
+          print "      Please try again.\n\n";
+          next;
+        }    
+        print "[INF] Good, log on successfully.\n";
+        last;
+      }  
+      else {        
+        do {
+          print "You have logged on [" . $na_ftp->ftpsrv . "]. Continue? [Y/N] ";        
+          chomp ($ans=<STDIN>);
+          if (lc $ans eq "n") {
+            $na_ftp->ftp_establish_session(undef);
+            $ret = $na_ftp->ftp_login(BC_Constant->Ftp_Login_Require_STDIN); # Verify username and password
+            if ($ret == 1) {
+              print "[ERR] Login to " . $na_ftp->ftpsrv . " with user name [" .  $na_ftp->username . "] password [" . $na_ftp->password . "] failed.\n";
+              print "      Please try again.\n\n";
+              next;
+            }    
+            print "[INF] Good, log on successfully.\n";
+            last;
+          } 
+          elsif (lc $ans eq "y") {
+            last;
+          }
+          print "[INF] Bad answer. Please try again.\n";
+        } while (lc $ans ne "n" && lc $ans ne "y") 
+      }
     }
     while (1) {
       print "Target File path that you want to download (Type quit to exit or back to up menu): ";     
@@ -184,6 +202,10 @@ while (1) {
         next;
       }    
       print "[INF] Good, download [" . $na_ftp->target_path . "] to [" . $RealBin . "] successfully.\n";
+      
+      $bc_tm->prt_control->{clear_screen} = 0;
+      $bc_tm->prt_control->{banner} = 0;
+      print "Please any key to continue...\n";
       chomp ($ans = <STDIN>);
       last; 
     }

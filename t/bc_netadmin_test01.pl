@@ -66,8 +66,10 @@ BEGIN {
   chdir $RealBin;
 }
 
+my $ret;
+#"ftpsrv"   => "10.200.108.10",
 my $na = BC_NetworkAdmin->new(
-  "ftpsrv"   => "10.200.108.10",
+  "ftpsrv"   => "192.168.1.101",
   "username" => "ss",
   "password" => "ss",
 );
@@ -77,7 +79,14 @@ if (ref $na ne "BC_NetworkAdmin"){
 }
 
 $na->target_path("/LOC_Machines_List.xls");
-$na->Download();
+$ret = $na->Download();
+if ($ret != 1) {
+  print "Download successfully.\n";
+}
+else {
+  print "Download failed.\n";
+}
+
 
 END {
 

@@ -431,9 +431,8 @@ sub menu_list {
   }
 }
 
-# Class method
-sub clear_screen {  
-  my $cmd;
+sub clear_screen { 
+  my $cmd; 
   
   if (BC_OS_Utility->check_os() eq "Linux") {
     $cmd="clear";
@@ -457,11 +456,12 @@ sub menu {
     croak "Should call parser with an object, not a class.";
   }
   
-  BC_Term_Menus->clear_screen();
   # Create a default self if we didn't get one
   if(!defined($self) or !ref($self)) {
     $self = BC_Term_Menus->new();
   } 
+  
+  $self->clear_screen() if $self->prt_control->{clear_screen};;
   
   print $self->banner if $self->prt_control->{banner};
   print $self->ask_hint_text if $self->prt_control->{ask_hint_text};

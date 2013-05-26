@@ -142,7 +142,7 @@ sub new {
     if ( ! defined $self->ftpobj($self->{ftpsrv}) ) {
       croak "Setup ftpobj failed."
     }
-    if ( ref $self->ftp_login($self->{username}, $self->{password}) ne "Net::FTP") {
+    if ( ref $self->ftp_login($self->username, $self->password) ne "Net::FTP") {
       print "[" . __FILE__ . " Line:" . __LINE__ . "]\n";
       print "[ERR] BC_NetworkAdmin new failed at \$self->ftp_login.\n" ;
       return 1; 
@@ -232,16 +232,16 @@ sub password {
 
 sub ftpobj {
   my $self = shift;
+  my $ret;
   
   unless ( ref $self eq "BC_NetworkAdmin") {
     croak "Should call target_path with an object, not a class.";
   }
-  unless ( defined $self->ftpsrv ) {
-    croak "Should set \$self->ftpsrv at first.";
-  }
-  
+    
   if ( scalar(@_) == 1) {
-    return $self->{ftpobj} = Net::FTP->new($self->ftpsrv(), Debug => 0);
+    $self->ftpsrv(shift);
+    $ret = Net::FTP->new($self->ftpsrv(), Debug => 0);
+    return $self->{ftpobj} = $ret;
   }
   elsif ( defined $self->{ftpobj} and ref $self->{ftpobj} eq "Net::FTP") {
     return $self->{ftpobj};
@@ -258,31 +258,42 @@ sub ftpobj {
 # ftp_login() or ftp_login(username, password)
 sub ftp_login {
   my $self = shift;
+  my $ans;
   
   unless ( ref $self eq "BC_NetworkAdmin") {
     croak "Should call target_path with an object, not a class.";
   }
   
-  if ( scalar(@_) == 2) {   
+  if ( scalar(@_) == 2) {  
     $self->username(shift);
     $self->password(shift); 
   }
-  if (defined $self->username && defined $self->password) {
-    if ( defined $self->ftpobj) {
-      if ( ! $self->ftpobj->login($self->username, $self->password) ) {
-        # Login failed.
-        print "[WAR] Validate user name and password failed.\n";
-        return 1;
-      }
-      return $self->ftp_establish_session($self->{ftpobj});
-    }
-    else {
-      croak "Should set $self->ftpobj at first.";
-    }
+  elsif ( scalar(@_) == 4 && $_[0] == BC_Constant->Ftp_Login_Direct) {  
+    shift; 
+    $self->ftpobj(shift);  
+    $self->username(shift);
+    $self->password(shift); 
+  }
+  elsif (scalar(@_) == 1 && $_[0] == BC_Constant->Ftp_Login_Require_STDIN) {    
+    print "FTP server ip or host name: ";
+    chomp ($ans = <STDIN>);
+    $self->ftpobj($ans);
+    print "FTP user name: ";      
+    chomp ($ans = <STDIN>);
+    $self->username($ans);
+    print "FTP password: ";     
+    chomp ($ans = <STDIN>);
+    $self->password($ans);        
   }
   else {
-    croak "Should provide username, password at first.";
-  }   
+    croak "[ERR] Parameters error.";   
+  }
+  if ( ! $self->ftpobj->login($self->username, $self->password) ) {
+    # Login failed.
+    print "[WAR] Validate user name and password failed.\n";
+    return 1;
+  }
+  return $self->ftp_establish_session($self->{ftpobj});
 }
 
 # ftp_establish_session is a ref to $self->ftpobj
@@ -296,7 +307,7 @@ sub ftp_establish_session {
   
   if ( scalar(@_) == 1) {
     $data = shift; 
-    if (ref $data eq "Net::FTP") {   
+    if (ref $data eq "Net::FTP" || ! defined $data) {   
       return $self->{ftp_establish_session} = $data;
     }
     else {
@@ -308,8 +319,7 @@ sub ftp_establish_session {
     return $self->{ftp_establish_session};
   }
   else {
-    print "[ERR] You need specify a var.\n";
-    return 1;
+    return $self->{ftp_establish_session}=undef;
   }
 }
 
@@ -341,7 +351,7 @@ sub Download {
   # To change to a particular directory on the FTP server, use the cwd method
   # $ftpobj->cwd("/") or die "Change work directory failed ", $ftpobj->message;
   if ( -e $RealBin . "/" . basename($self->target_path)) {
-    print "[WAR] Seems you have a local copy with tha same name, do you want to overwrite it? [Y/N]";
+    print "[WAR] Seems you have a local copy with tha same name, do you want to overwrite it? [Y/N] ";
     chomp ($ans=<STDIN>);
     if (lc $ans eq "n") {
       return 1;

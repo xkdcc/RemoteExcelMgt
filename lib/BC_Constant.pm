@@ -101,6 +101,9 @@ use constant Term_Menus_Bullet_Alpha                     => 1;
 use constant Term_Menus_Multi_Menu_Items                 => 1;
 use constant Term_Menus_Single_Menu_Item                 => 0;
 
+# For BC_NetworkAdmin.pm
+use constant Ftp_Login_Direct                            => 0;
+use constant Ftp_Login_Require_STDIN                     => 1;
 
 
 our @EXPORT_OK = qw($Excel_Format_Default
@@ -112,6 +115,8 @@ our @EXPORT_OK = qw($Excel_Format_Default
   $Term_Menus_Bullet_Alpha
   $Term_Menus_Multi_Menu_Items
   $Term_Menus_Single_Menu_Item
+  $Ftp_Login_Direct
+  $Ftp_Login_Require_STDIN
   );
 
 1;
