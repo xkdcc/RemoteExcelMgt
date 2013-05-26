@@ -46,7 +46,44 @@
 
 
 
-<pre></pre>
+<pre>
+Example #1:
+my $ret;
+my $na = BC_NetworkAdmin->new(
+  "ftpsrv"   => "10.200.108.10",
+  "username" => "ss",
+  "password" => "ss",
+);if (ref $na ne "BC_NetworkAdmin"){
+  croak "BC_NetworkAdmin->new failed.\n";
+}$na->target_path("/LOC_Machines_List.xls");
+$ret = $na->Download();
+if ($ret != 1) {
+  print "Download successfully.\n";
+}
+else {
+  print "Download failed.\n";
+}Example #2:
+my $na_ftp = BC_NetworkAdmin->new();print "FTP server ip or host name: ";
+$na_ftp->ftpsrv(chomp ($ans=<STDIN>)); 
+$na_ftp->ftpobj();print "FTP user name: ";
+$na_ftp->username(chomp ($ans=<STDIN>));
+print "FTP password: ";
+$na_ftp->password(chomp ($ans=<STDIN>));    $ret = $na_ftp->ftp_login();
+if ($ret == 1) {
+  print "[ERR] Login to " . $na_ftp->ftpsrv . " with user name [" .  $na_ftp->username . "] password [" . $na_ftp->password . "] failed.\n";
+  print "      Please try again.\n\n";
+  exit 1;
+}   
+print "[INF] Good, log on successfully.\n";$na_ftp->target_path(chomp ($ans=<STDIN>));
+$ret = $na_ftp->Download();
+if ($ret == 1) {
+  print "[ERR] Get [" . $na_ftp->target_path. "] failed.\n";
+  print $na_ftp->ftp_establish_session->message . "\n"; 
+  print "      Please try again.\n\n";
+  exit 1;
+}    
+print "[INF] Good, download [" . $na_ftp->target_path . "] to [" . FindBin->RealBin . "] successfully.\n";
+</pre>
 
 <h2 id="REQUIREMENTS">REQUIREMENTS</h2>
 

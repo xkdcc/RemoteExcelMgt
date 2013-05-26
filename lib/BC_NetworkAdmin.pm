@@ -22,6 +22,7 @@ Encapsulate network operations for my purpose.
 
 <pre>
 Example #1:
+my $ret;
 my $na = BC_NetworkAdmin->new(
   "ftpsrv"   => "10.200.108.10",
   "username" => "ss",
@@ -33,7 +34,13 @@ if (ref $na ne "BC_NetworkAdmin"){
 }
 
 $na->target_path("/LOC_Machines_List.xls");
-$na->Download();
+$ret = $na->Download();
+if ($ret != 1) {
+  print "Download successfully.\n";
+}
+else {
+  print "Download failed.\n";
+}
 
 Example #2:
 my $na_ftp = BC_NetworkAdmin->new();
