@@ -146,10 +146,8 @@ sub new {
   bless( $self, $class_name );  
   
   if (defined $self->{ftpsrv} && defined $self->{username} && $self->{password}) {
-    if ( ! defined $self->ftpobj($self->{ftpsrv}) ) {
-      croak "Setup ftpobj failed."
-    }
-    if ( ref $self->ftp_login($self->username, $self->password) ne "Net::FTP") {
+    
+    if ( ref $self->ftp_login(BC_Constant->Ftp_Login_Direct, $self->ftpsrv, $self->username, $self->password) ne "Net::FTP") {
       print "[" . __FILE__ . " Line:" . __LINE__ . "]\n";
       print "[ERR] BC_NetworkAdmin new failed at \$self->ftp_login.\n" ;
       return 1; 
@@ -237,7 +235,15 @@ sub password {
   }
 }
 
-sub ftpobj {
+#------------------------------------------------------------------------------
+# Calling format:
+# $self->ftpobj # Return directly if have defined. 
+# $self->ftpobj # Return a new if defined $self->ftpsrv and haven't been defined ftpobj
+# $self->ftpobj(ip) # Set $self->ftpsrv and new a Net::FTP instance
+# Called by:
+# $self->ftp_login
+#------------------------------------------------------------------------------
+sub _ftpobj {
   my $self = shift;
   my $ret;
   
@@ -271,20 +277,21 @@ sub ftp_login {
     croak "Should call target_path with an object, not a class.";
   }
   
-  if ( scalar(@_) == 2) {  
-    $self->username(shift);
-    $self->password(shift); 
-  }
-  elsif ( scalar(@_) == 4 && $_[0] == BC_Constant->Ftp_Login_Direct) {  
-    shift; 
-    $self->ftpobj(shift);  
+  if ( scalar(@_) == 4 && $_[0] == BC_Constant->Ftp_Login_Direct) {  
+    shift; # Ignore BC_Constant->Ftp_Login_Direct
+    $self->ftpsrv(shift); 
+    if ( ! defined $self->_ftpobj($self->ftpsrv) ) {
+      croak "Setup ftpobj failed."
+    }
     $self->username(shift);
     $self->password(shift); 
   }
   elsif (scalar(@_) == 1 && $_[0] == BC_Constant->Ftp_Login_Require_STDIN) {    
     print "FTP server ip or host name: ";
     chomp ($ans = <STDIN>);
-    $self->ftpobj($ans);
+    if ( ! defined $self->_ftpobj($ans) ) {
+      croak "Setup ftpobj failed."
+    }
     print "FTP user name: ";      
     chomp ($ans = <STDIN>);
     $self->username($ans);
@@ -295,7 +302,7 @@ sub ftp_login {
   else {
     croak "[ERR] Parameters error.";   
   }
-  if ( ! $self->ftpobj->login($self->username, $self->password) ) {
+  if ( ! $self->_ftpobj->login($self->username, $self->password) ) {
     # Login failed.
     print "[WAR] Validate user name and password failed.\n";
     return 1;
