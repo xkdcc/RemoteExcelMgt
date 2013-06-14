@@ -65,28 +65,27 @@ use BC_Constant;
 BEGIN {
   chdir $RealBin;
 }
-
 my $ret;
+
 #"ftpsrv"   => "10.200.108.10",
 my $na = BC_NetworkAdmin->new(
-  "ftpsrv"   => "192.168.1.101",
+  "ftpsrv"   => "10.200.108.10",
   "username" => "ss",
   "password" => "ss",
 );
 
-if (ref $na ne "BC_NetworkAdmin"){
+if ( ref $na ne "BC_NetworkAdmin" ) {
   croak "BC_NetworkAdmin->new failed.\n";
 }
 
 $na->target_path("/LOC_Machines_List.xls");
 $ret = $na->Download();
-if ($ret != 1) {
+if ( $ret != 1 ) {
   print "Download successfully.\n";
 }
 else {
   print "Download failed.\n";
 }
-
 
 END {
 

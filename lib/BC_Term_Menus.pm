@@ -489,21 +489,18 @@ sub menu {
       $answer = <STDIN>;
       chomp $answer;
       
-      # TODO: [Brant][2013-5-22 12:29:37]
-      # 1. check Term_Menus_Single_Menu_Item
-      #
       if ( $answer =~/[^0-9]+/ || $answer < 1 || $answer > scalar (@{$self->menu_list})) {
         $self->tried($self->tried + 1);
         if ($self->tried >= $self->try_time) {
-          print $self->echo_choice_text() . $answer . "\n" if $self->prt_control->{echo_choice_text};
+          print $self->echo_choice_text . $answer . "\n" if $self->prt_control->{echo_choice_text};
           print $self->too_many_tries_text();
           exit 0;
         }
-        print $self->echo_choice_text() . $answer . "\n" if $self->prt_control->{echo_choice_text};
+        print $self->echo_choice_text . $answer . "\n" if $self->prt_control->{echo_choice_text};
         print $self->no_option_text() if $self->prt_control->{no_option_text};
       }
       else {
-        print $self->echo_choice_text() . $answer . "\n" if $self->prt_control->{echo_choice_text};
+        print $self->echo_choice_text . $answer . "\n" if $self->prt_control->{echo_choice_text};
         $self->tried(0);
         return $answer;
       }

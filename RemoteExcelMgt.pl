@@ -131,93 +131,131 @@ BEGIN {
 
 }
 
-my $ret=0;
+my $ret    = 0;
 my $na_ftp = BC_NetworkAdmin->new();
 
 print "\n\n";
 
-my @main_menu = ("Download files by FTP", "Upload files to FTP", "Operations on local excel file");
+my @main_menu = (
+  "Download files by FTP",
+  "Upload files to FTP",
+  "Operations on local excel file",
+  "Quit"
+);
 my $bc_tm = BC_Term_Menus->new(
   banner => "\n\nWelcome to use RemoteExcel.pl written by Brant Chen.\n\n\n\n",
-  menu_list => \@main_menu,
-  multi_menu_item => 1, # 0 means single_menu_item need input.
-  prt_control => {
-    banner => 1,
-    ask_hint_text => 1,
+  menu_list       => \@main_menu,
+  multi_menu_item => 1,              # 0 means single_menu_item need input.
+  prt_control     => {
+    banner           => 1,
+    ask_hint_text    => 1,
     echo_choice_text => 1,
-    no_option_text => 1,
-    clear_screen => 1,
+    no_option_text   => 1,
+    clear_screen     => 1,
   }
 );
 
 while (1) {
-  
+
   my $ans = $bc_tm->menu();
-  
-  if ($ans == 1) { # Download
-    
-    while (1) { 
-      if (! defined $na_ftp->ftp_establish_session) {       
-        $ret = $na_ftp->ftp_login(BC_Constant->Ftp_Login_Require_STDIN); # Verify username and password
-        if ($ret == 1) {
-          print "[ERR] Login to " . $na_ftp->ftpsrv . " with user name [" .  $na_ftp->username . "] password [" . $na_ftp->password . "] failed.\n";
-          print "      Please try again.\n\n";
-          next;
-        }    
-        print "[INF] Good, log on successfully.\n";
-        last;
-      }  
-      else {        
-        do {
-          print "You have logged on [" . $na_ftp->ftpsrv . "]. Continue? [Y/N] ";        
-          chomp ($ans=<STDIN>);
-          if (lc $ans eq "n") {
-            $na_ftp->ftp_establish_session(undef);
-            $ret = $na_ftp->ftp_login(BC_Constant->Ftp_Login_Require_STDIN); # Verify username and password
-            if ($ret == 1) {
-              print "[ERR] Login to " . $na_ftp->ftpsrv . " with user name [" .  $na_ftp->username . "] password [" . $na_ftp->password . "] failed.\n";
-              print "      Please try again.\n\n";
-              next;
-            }    
-            print "[INF] Good, log on successfully.\n";
-            last;
-          } 
-          elsif (lc $ans eq "y") {
-            last;
-          }
-          print "[INF] Bad answer. Please try again.\n";
-        } while (lc $ans ne "n" && lc $ans ne "y") 
-      }
-    }
+
+  if ( $ans == 1 ) {    # Download
+    $na_ftp->check_established_session_and_ask_continue();
+
     while (1) {
-      print "Target File path that you want to download (Type quit to exit or back to up menu): ";     
-      chomp ($ans = <STDIN>);
-      exit 0 if $ans eq "quit";
-      last if $ans eq "back";
+      do {
+        print
+"Target File path that you want to download (Type quit to exit or back to up menu): ";
+        chomp( $ans = <STDIN> );
+        exit 0 if $ans eq "quit";
+        last   if $ans eq "back";
+        print "[WAR] Your answer is empty. Please try again.\n\n"
+          if ( $ans eq "" );
+      } while ( $ans eq "" );
+
       $na_ftp->target_path($ans);
       $ret = $na_ftp->Download();
-      if ($ret == 1) {
-        print "[ERR] Get [" . $na_ftp->target_path. "] failed.\n";
+      if ( $ret == 1 ) {
+        print "[ERR] Get [" . $na_ftp->target_path . "] failed.\n";
         print "      Please try again.\n\n";
         next;
-      }    
-      print "[INF] Good, download [" . $na_ftp->target_path . "] to [" . $RealBin . "] successfully.\n";
-      
+      }
+      print "[INF] Good, download ["
+        . $na_ftp->target_path
+        . "] to ["
+        . $RealBin
+        . "] successfully.\n";
+
       $bc_tm->prt_control->{clear_screen} = 0;
-      $bc_tm->prt_control->{banner} = 0;
+      $bc_tm->prt_control->{banner}       = 0;
       print "Please any key to continue...\n";
-      chomp ($ans = <STDIN>);
-      last; 
+      chomp( $ans = <STDIN> );
+      last;
     }
-    next;    
+    next;
   }
-  elsif ($ans == 2) { # Upload
-    
+  elsif ( $ans == 2 ) {    # Upload
+    $na_ftp->check_established_session_and_ask_continue();
+    while (1) {
+      do {
+        print
+"Target folder that you want to upload (Type quit to exit or back to up menu): ";
+        chomp( $ans = <STDIN> );
+        exit 0 if $ans eq "quit";
+        last   if $ans eq "back";
+        print "[WAR] Your answer is empty. Please try again.\n\n"
+          if ( $ans eq "" );
+      } while ( $ans eq "" );
+      $na_ftp->target_folder($ans);
+
+      while (1) {
+        print
+"Local file path that you want to upload (Type quit to exit or back to up menu): ";
+        chomp( $ans = <STDIN> );
+        exit 0 if $ans eq "quit";
+        last   if $ans eq "back";
+
+        # Check relative path and absolute path.
+        if ( !-e $ans && !-e $RealBin . "/" . $ans ) {
+          print "[ERR] File [" . $ans . "] not exist.\n";
+          next;
+        }
+        $na_ftp->local_files($ans);
+        last;
+      }
+
+      $ret = $na_ftp->Upload();
+      if ( $ret == 1 ) {
+        print "[ERR] Upload ["
+          . $na_ftp->local_files
+          . "] to ["
+          . $na_ftp->target_folder
+          . "] failed.\n";
+        print "      Please try again.\n\n";
+        next;
+      }
+      print "[INF] Good, upload ["
+        . $na_ftp->local_files
+        . "] to ["
+        . $na_ftp->target_folder
+        . "] successfully.\n";
+
+      $bc_tm->prt_control->{clear_screen} = 0;
+      $bc_tm->prt_control->{banner}       = 0;
+      print "Please any key to continue...\n";
+      chomp( $ans = <STDIN> );
+      last;
+    }
+    next;
   }
-  elsif ($ans == 3) { # Operations
-    
+  elsif ( $ans == 3 ) {    # Operations
+
   }
-  
+  elsif ( $ans == 4 ) {    # Operations
+    print "Goodbye.\n";
+    exit 0;
+  }
+
   last;
 }
 
