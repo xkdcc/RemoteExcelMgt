@@ -249,39 +249,48 @@ while (1) {
     next;
   }
   elsif ( $ans == 3 ) {    # Operations
-    # Draft Excel function design.
-    # Get Excel file 
-    # Excel operation menu:
-    # 1. Print all sheet names in Excel file.
-    #    common used menu:
-    #    1) Type <back to previous menu
-    #    2) Set focus to specified sheet name and define a ref area and save it to conf file.
-    #       For example: 
-    #       sheet_name (r_start_number) -- start from row r, all columns
-    #       sheet_name (c_start_number) -- start from col c, all rows
-    #       sheet_name (r_start_number, c_start_number) -- start from row r and col c, all left
-    #       sheet_name (r_start_number, r_end_number) -- all cols in (r_start_number, r_end_number)
-    #       sheet_name (c_start_number, c_end_number) -- all rows in (c_start_number, c_end_number)
-    #       sheet_name (r_start_number, r_end_number, c_start_number, c_end_number)       
-    #    3) Modify specified cells and save it.
-    # 2. Print sheet content with spcified sheet name
-    #    Go to common used menu.
-    # 3. Print sheet content with spcified sheet index
-    #    Go to common used menu.
-    # 4. Read conf file and list all defined areas.
-    #    Then provide two options:
-    #    1) to let user to define a ref area if user know the sheet name and accurate range.
-    #    2) Select existed items and then user can print and modification
-    #    3) Back to previous menu.
-    # 5. Define a ref area if you know the sheet name and accurate range.
-    #    Then modify specified cells and save it and back.
-    # 6. List all impacted areas that you have done modifitions with section organization.
-    #    Then you can type the section number to do a quick update.
-    # 7. Give a compare view that List all previous and current content that you've done modifition 
-    #    with section serial number.
-    #    Then user can type the section number to do a quick in-place update.
-    # 8. Back to previous menu
+    # Draft function Design:
+    # Get Excel file path and check exist    
     # 
+    # Then Excel operations menu 
+    # 1. Print All Sheet Names In The File
+    #    Sub Menu:
+    #    1) Type <back To Back Up 
+    #    2) Type Index To Print Sheet And Set Focus To Selected Sheet
+    #       Common Used Sub Menu: 
+    #       1) Type <back1 To Back Up Previous Menu
+    #       2) Type <back2 To Back Up Excel Operations Menu
+    #       3) Quickly Define A Area With Specifying Sheet Name And Save It To Configuration File.
+    #          Refer To Menu 5.
+    #          No Sub, Return To This Menu
+    #       4) Modify Specified Cells And Save It
+    #          No Sub, Return To This Menu
+    #    3) Modify Specified Cells And Save It.  
+    # 2. Print Sheet With Specified Sheet Name And Set Focus To Selected Sheet
+    #    Go To Common Used Sub Menu.
+    # 3. Print Sheet With Specified Sheet Index
+    #    Go To Common Used Sub Menu.
+    # 4. Read Configuration File And Print Area References You Defined If Available.
+    # 5. Define Area For Quick Ref And Print If You Know Sheet Name And Accurate Range You Want.
+    #    For Example, You Define A Area: Ip_list (r_1, R_5, C_3, C_4) 
+    #    Then It Will Save This Conf To File For Later Reference Even You Exit RemoteExcelMgt.pl And Use It Again.
+    #    And This Ref Would Be List On The Excel Operations Menu 
+    #    The Format To Define A Area Could Be: 
+    #      Area_name (sheet_index)
+    #      Area_name (sheet_index, R_start_number) -- Start From Row R, All Columns
+    #      Area_name (sheet_index, C_start_number) -- Start From Col C, All Rows
+    #      Area_name (sheet_index, R_start_number, C_start_number) -- Start From Row R And Col C, All Left
+    #      Area_name (sheet_index, R_start_number, R_end_number) -- All Col Between R_start_number And R_end_number
+    #      Area_name (sheet_index, C_start_number, C_end_number) -- All Row Between C_start_number And C_end_number
+    #      Area_name(sheet_index, R_start_number, R_end_number, C_start_number, C_end_number) 
+    # 6. Modify Specified Cells Directly If You Know Sheet Name And Accurate Range You Want..
+    #    Refer To Menu 5.
+    # 7. List Impacted You-defined Areas That You Have Done Modifications In This Session.
+    # 8. Give A Compare View That List Previous Content And Current Content With Section Number.
+    #    If Use Want To Change Some Places, He Just Need Type Section Number And Do A Quick Update And Save.
+    #    Then Back Up To Previous Menu.
+    # 9. Back up to previous menu.
+
   }
   elsif ( $ans == 4 ) {    # Operations
     print "Goodbye.\n";
