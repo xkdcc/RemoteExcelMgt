@@ -249,6 +249,48 @@ while (1) {
     next;
   }
   elsif ( $ans == 3 ) {    # Operations
+    # Draft function Design:
+    # Get Excel file path and check exist    
+    # 
+    # Then Excel operations menu 
+    # 1. Print all sheet names in the file
+    #    Sub menu:
+    #    1) Type <back to back up 
+    #    2) Type index to print sheet and set focus to selected sheet
+    #       common used sub menu: 
+    #       1) Type <back1 to back up previous menu
+    #       2) Type <back2 to back up Excel operations menu
+    #       3) quickly define a area with specifying sheet name and save it to configuration file.
+    #          Refer to menu 5.
+    #          no sub, return to this menu
+    #       4) modify specified cells and save it
+    #          no sub, return to this menu
+    #    3) modify specified cells and save it.  
+    # 2. Print sheet with specified sheet name and set focus to selected sheet
+    #    Go to common used sub menu.
+    # 3. Print sheet with specified sheet index
+    #    Go to common used sub menu.
+    # 4. Read configuration file and print area references you defined if available.
+    # 5. Define area for quick ref and print if you know sheet name and accurate range you want.
+    #    For example, you define a area: ip_list (r_1, r_5, c_3, c_4) 
+    #    Then it will save this conf to file for later reference even you exit RemoteExcelMgt.pl and use it again.
+    #    And this ref would be list on the Excel operations menu 
+    #    The format to define a area could be: 
+    #      area_name (sheet_index)
+    #      area_name (sheet_index, r_start_number) -- start from row r, all columns
+    #      area_name (sheet_index, c_start_number) -- start from col c, all rows
+    #      area_name (sheet_index, r_start_number, c_start_number) -- start from row r and col c, all left
+    #      area_name (sheet_index, r_start_number, r_end_number) -- all col between r_start_number and r_end_number
+    #      area_name (sheet_index, c_start_number, c_end_number) -- all row between c_start_number and c_end_number
+    #      area_name(sheet_index, r_start_number, r_end_number, c_start_number, c_end_number) 
+    # 6. Modify specified cells directly if you know sheet name and accurate range you want..
+    #    Refer to menu 5.
+    # 7. List impacted you-defined areas that you have done modifications in this session.
+    # 8. Give a compare view that list previous content and current content with section number.
+    #    If use want to change some places, he just need type section number and do a quick update and save.
+    #    Then back up to previous menu.
+    # 9. Back up to previous menu.
+    
 
   }
   elsif ( $ans == 4 ) {    # Operations
