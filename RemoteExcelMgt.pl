@@ -249,7 +249,39 @@ while (1) {
     next;
   }
   elsif ( $ans == 3 ) {    # Operations
-
+    # Draft Excel function design.
+    # Get Excel file 
+    # Excel operation menu:
+    # 1. Print all sheet names in Excel file.
+    #    common used menu:
+    #    1) Type <back to previous menu
+    #    2) Set focus to specified sheet name and define a ref area and save it to conf file.
+    #       For example: 
+    #       sheet_name (r_start_number) -- start from row r, all columns
+    #       sheet_name (c_start_number) -- start from col c, all rows
+    #       sheet_name (r_start_number, c_start_number) -- start from row r and col c, all left
+    #       sheet_name (r_start_number, r_end_number) -- all cols in (r_start_number, r_end_number)
+    #       sheet_name (c_start_number, c_end_number) -- all rows in (c_start_number, c_end_number)
+    #       sheet_name (r_start_number, r_end_number, c_start_number, c_end_number)       
+    #    3) Modify specified cells and save it.
+    # 2. Print sheet content with spcified sheet name
+    #    Go to common used menu.
+    # 3. Print sheet content with spcified sheet index
+    #    Go to common used menu.
+    # 4. Read conf file and list all defined areas.
+    #    Then provide two options:
+    #    1) to let user to define a ref area if user know the sheet name and accurate range.
+    #    2) Select existed items and then user can print and modification
+    #    3) Back to previous menu.
+    # 5. Define a ref area if you know the sheet name and accurate range.
+    #    Then modify specified cells and save it and back.
+    # 6. List all impacted areas that you have done modifitions with section organization.
+    #    Then you can type the section number to do a quick update.
+    # 7. Give a compare view that List all previous and current content that you've done modifition 
+    #    with section serial number.
+    #    Then user can type the section number to do a quick in-place update.
+    # 8. Back to previous menu
+    # 
   }
   elsif ( $ans == 4 ) {    # Operations
     print "Goodbye.\n";
