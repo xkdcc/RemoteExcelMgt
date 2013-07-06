@@ -99,13 +99,14 @@ and "upload" in a menu item.
 # TODO: [Brant][2013-5-4 21:03:07]
 # 1. Need perl test module.
 # 2. Need well-structured log mechanism
-#
+# 
 
 use strict;
 use warnings;
 use utf8;
 use Carp;
 use Net::FTP;
+use Cwd 'abs_path';
 
 =head3 A proper way of using Perl custom modules inside of other Perl modules
 
@@ -137,10 +138,10 @@ my $na_ftp = BC_NetworkAdmin->new();
 print "\n\n";
 
 my @main_menu = (
+  "Quit",
   "Download files by FTP",
   "Upload files to FTP",
-  "Operations on local excel file",
-  "Quit"
+  "Operations on local excel file"
 );
 my $bc_tm = BC_Term_Menus->new(
   banner => "\n\nWelcome to use RemoteExcel.pl written by Brant Chen.\n\n\n\n",
@@ -155,11 +156,35 @@ my $bc_tm = BC_Term_Menus->new(
   }
 );
 
+my @excel_menu = (
+  "Quit",
+  "Go back",
+  "Print all sheet names in this file",
+  ""
+);
+my $bc_tm_excel = BC_Term_Menus->new(
+  banner => "",
+  menu_list       => \@excel_menu,
+  multi_menu_item => 1,              # 0 means single_menu_item need input.
+  prt_control     => {
+    banner           => 1,
+    ask_hint_text    => 1,
+    echo_choice_text => 1,
+    no_option_text   => 1,
+    clear_screen     => 0,
+  }
+);
+
 while (1) {
 
   my $ans = $bc_tm->menu();
 
-  if ( $ans == 1 ) {    # Download
+  
+  if ( $ans == 1 ) {    # Exit
+    print "Goodbye.\n";
+    exit 0;
+  }
+  elsif ( $ans == 2 ) {    # Download
     $na_ftp->check_established_session_and_ask_continue();
 
     while (1) {
@@ -194,7 +219,7 @@ while (1) {
     }
     next;
   }
-  elsif ( $ans == 2 ) {    # Upload
+  elsif ( $ans == 3 ) {    # Upload
     $na_ftp->check_established_session_and_ask_continue();
     while (1) {
       do {
@@ -248,12 +273,14 @@ while (1) {
     }
     next;
   }
-  elsif ( $ans == 3 ) {    # Operations
+  elsif ( $ans == 4 ) {    # Excel Operations
     # Draft function Design:
     # Get Excel file path and check exist    
     # 
     # Then Excel operations menu 
-    # 1. Print All Sheet Names In The File
+    # 1. Exit
+    # 2. Go back.
+    # 3. Print All Sheet Names In The File
     #    Sub Menu:
     #    1) Type <back To Back Up 
     #    2) Type Index To Print Sheet And Set Focus To Selected Sheet
@@ -266,12 +293,12 @@ while (1) {
     #       4) Modify Specified Cells And Save It
     #          No Sub, Return To This Menu
     #    3) Modify Specified Cells And Save It.  
-    # 2. Print Sheet With Specified Sheet Name And Set Focus To Selected Sheet
+    # 4. Print Sheet With Specified Sheet Name And Set Focus To Selected Sheet
     #    Go To Common Used Sub Menu.
-    # 3. Print Sheet With Specified Sheet Index
+    # 5. Print Sheet With Specified Sheet Index
     #    Go To Common Used Sub Menu.
-    # 4. Read Configuration File And Print Area References You Defined If Available.
-    # 5. Define Area For Quick Ref And Print If You Know Sheet Name And Accurate Range You Want.
+    # 6. Read Configuration File And Print Area References You Defined If Available.
+    # 7. Define Area For Quick Ref And Print If You Know Sheet Name And Accurate Range You Want.
     #    For Example, You Define A Area: Ip_list (r_1, R_5, C_3, C_4) 
     #    Then It Will Save This Conf To File For Later Reference Even You Exit RemoteExcelMgt.pl And Use It Again.
     #    And This Ref Would Be List On The Excel Operations Menu 
@@ -283,20 +310,69 @@ while (1) {
     #      Area_name (sheet_index, R_start_number, R_end_number) -- All Col Between R_start_number And R_end_number
     #      Area_name (sheet_index, C_start_number, C_end_number) -- All Row Between C_start_number And C_end_number
     #      Area_name(sheet_index, R_start_number, R_end_number, C_start_number, C_end_number) 
-    # 6. Modify Specified Cells Directly If You Know Sheet Name And Accurate Range You Want..
+    # 8. Modify Specified Cells Directly If You Know Sheet Name And Accurate Range You Want..
     #    Refer To Menu 5.
-    # 7. List Impacted You-defined Areas That You Have Done Modifications In This Session.
-    # 8. Give A Compare View That List Previous Content And Current Content With Section Number.
+    # 9. List Impacted You-defined Areas That You Have Done Modifications In This Session.
+    # 10. Give A Compare View That List Previous Content And Current Content With Section Number.
     #    If Use Want To Change Some Places, He Just Need Type Section Number And Do A Quick Update And Save.
     #    Then Back Up To Previous Menu.
-    # 9. Back up to previous menu.
-
+  
+    
+    # Get Excel file path and check exist    
+    do {
+      print
+"Please input your Excle file path (Type quit to exit or back to up menu): ";
+      chomp( $ans = <STDIN> );
+      exit 0 if $ans eq "quit";
+      last   if $ans eq "back";
+      print "[WAR] Your answer is empty. Please try again.\n\n"
+        if ( $ans eq "" );
+      if (! -e $RealBin . "/" . $ans) {
+        print "[WAR] The file [$ans] not exists. Please try again.\n\n";
+        $ans=""; 
+      }
+    } while ( $ans eq "" );          
+    
+    $bc_tm_excel->banner("\n\nYou are working on [" . abs_path($ans) . "]\n\n");
+    $bc_tm_excel->prt_control->{banner}=1;
+    my $ans = $bc_tm_excel->menu();
+    
+    # Excel menu
+    while (1) {
+      if ($ans==1) {
+        print "Goodbye.\n";
+        exit 0;
+      }
+      elsif ($ans==2) {
+        last; # Go back
+      }
+      elsif ($ans==3) {
+        
+      }
+      elsif ($ans==4) {
+        
+      }
+      elsif ($ans==5) {
+        
+      }
+      elsif ($ans==6) {
+        
+      }
+      elsif ($ans==7) {
+        
+      }
+      elsif ($ans==8) {
+        
+      }
+      elsif ($ans==9) {
+        last;
+      }
+      elsif ($ans==10) {
+        
+      }
+    } # while (1) Excel menu
+    next;
   }
-  elsif ( $ans == 4 ) {    # Operations
-    print "Goodbye.\n";
-    exit 0;
-  }
-
   last;
 }
 
