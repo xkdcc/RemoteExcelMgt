@@ -4,8 +4,7 @@ Copyright 2012 - 2013 Brant Chen (brantchen2008@gmail.com and xkdcc@163.com), Al
 
 ##SYNOPSIS
 
-To remote update team's LOC_Machines_List.xls.<br>
-Of course, you can have a try on any other Excle file.
+To remote update team's LOC_Machines_List.xls. Of course, you can have a try on any other Excle file.
 
 ##REQUIREMENTS
 
@@ -31,9 +30,9 @@ Testing under ActivePerl 5.16.3.1603.
 
 ##USAGE        
 
-This perl script will provide a CMD MENU.<br>
-Esc means return to previous menu at any time.
+This perl script will provide a CMD MENU. Esc means return to previous menu at any time.
 
+```
 perl RemoteExcelMgt.pl
 Main menu:
 1. Download files by FTP
@@ -63,9 +62,4 @@ Sub menu of "3":
    Ask whether submit
    Print range after submit changes.
    Provide one-time undo after submit.
-
-     
- 
-
-
- 
+```
