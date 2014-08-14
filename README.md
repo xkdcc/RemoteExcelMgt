@@ -1,22 +1,21 @@
 RemoteExcelMgt.pl
+---
+Copyright 2012 - 2013 Brant Chen (brantchen2008@gmail.com and xkdcc@163.com), All Rights Reserved 
 
+##SYNOPSIS
 
+To remote update team's LOC_Machines_List.xls.<br>
+Of course, you can have a try on any other Excle file.
 
-Copyright 2012 - 2013 Brant Chen (xkdcc@163.com), All Rights Reserved 
-
-SYNOPSIS
-
-To remote update team's LOC_Machines_List.xls.
-
-REQUIREMENTS
+##REQUIREMENTS
 
 Need modules from CPAN:
-Spreadsheet::ParseExcel
-Spreadsheet::ParseExcel::SaveParser;
-Spreadsheet::WriteExcel
-Text::ASCIITable 
+* Spreadsheet::ParseExcel
+* Spreadsheet::ParseExcel::SaveParser;
+* Spreadsheet::WriteExcel
+* Text::ASCIITable 
 
-DESCRIPTION
+##DESCRIPTION
 
 Testing under ActivePerl 5.16.3.1603.
 
@@ -30,9 +29,9 @@ Testing under ActivePerl 5.16.3.1603.
    <2> If remote one's time is newer, give warning and choice.
 
 
-USAGE:        
+##USAGE        
 
-This perl script will provide a CMD MENU.
+This perl script will provide a CMD MENU.<br>
 Esc means return to previous menu at any time.
 
 perl RemoteExcelMgt.pl
